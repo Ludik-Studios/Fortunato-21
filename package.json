@@ -19,6 +19,7 @@
   "dependencies": {
     "@astrojs/netlify": "^8.2.10",
     "@google-analytics/data": "^7.2.1",
+    "@netlify/blobs": "^11.1.4",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.3",
     "astro": "^7.3.5",
