@@ -7,7 +7,8 @@
   },
   "allowScripts": {
     "sharp": true,
-    "protobufjs": true
+    "protobufjs": true,
+    "esbuild": true
   },
   "scripts": {
     "dev": "astro dev",
