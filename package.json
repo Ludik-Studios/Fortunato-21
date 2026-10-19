@@ -3,7 +3,11 @@
   "type": "module",
   "version": "0.0.1",
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=22.19.0"
+  },
+  "allowScripts": {
+    "sharp": true,
+    "protobufjs": true
   },
   "scripts": {
     "dev": "astro dev",
@@ -12,9 +16,11 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^7.3.5"
-  },
-  "allowScripts": {
-    "esbuild": true
+    "@astrojs/netlify": "^8.2.10",
+    "@google-analytics/data": "^7.2.1",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.117.3",
+    "astro": "^7.3.5",
+    "stripe": "^23.0.0"
   }
 }
