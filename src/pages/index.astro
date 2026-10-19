@@ -6,8 +6,7 @@ import AdSlot from '../components/AdSlot.astro';
 
 const unityGameUrl = import.meta.env.PUBLIC_UNITY_GAME_URL;
 const adsenseClientId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID;
-const adsenseSlotId = import.meta.env.PUBLIC_ADSENSE_SLOT_ID;
-const adsenseEnabled = import.meta.env.PROD && adsenseClientId && adsenseSlotId;
+const adsenseEnabled = import.meta.env.PROD && adsenseClientId;   
 const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
 const currentUser = Astro.locals.user;
 ---
@@ -15,6 +14,7 @@ const currentUser = Astro.locals.user;
 <Layout title="Ludik Hub | Juegos de Ludik Studios" description="Descubre los juegos independientes de Ludik Studios." lang="es" adsenseClientId={adsenseEnabled ? adsenseClientId : undefined} gaMeasurementId={gaMeasurementId}>
 	<main class="hub-shell">
 		<header class="topbar">
+  
 			<a class="brand" href="#home" aria-label="Inicio de Ludik Hub" data-ga-event="home_brand">
 				<span class="brand-card" aria-hidden="true">
 					<span class="brand-card-corner">K<i>♦</i></span>
@@ -82,9 +82,7 @@ const currentUser = Astro.locals.user;
 			</aside>
 		</section>
 
-		{adsenseEnabled || import.meta.env.DEV ? (
-			<AdSlot clientId={adsenseClientId} slotId={adsenseSlotId} />
-		) : null}
+	
 
 		<section class="lower-row" id="games" aria-label="Novedades de juegos">
 			<div class="update-note"><span class="update-icon" aria-hidden="true">✳</span><p><b>Un nuevo juego está tomando forma.</b><br />Pequeños mundos, creados con curiosidad por Ludik Studios.</p></div>
