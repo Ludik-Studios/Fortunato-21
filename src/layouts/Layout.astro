@@ -1,15 +1,45 @@
+---
+
+interface Props {
+	title?: string;
+	description?: string;
+	lang?: string;
+	adsenseClientId?: string;
+	gaMeasurementId?: string;
+}
+
+import AnalyticsConsent from '../components/AnalyticsConsent.astro';
+
+const {
+	title = 'Ludik Hub | Juegos de Ludik Studios',
+	description = 'Juegos independientes de Ludik Studios: pequeños mundos hechos con curiosidad.',
+	lang = 'es',
+	adsenseClientId,
+	gaMeasurementId,
+} = Astro.props;
+---
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#6758db" />
+		<meta name="description" content={description} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>{title}</title>
+		{adsenseClientId && (
+			<script
+				async
+				src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClientId}`}
+				crossorigin="anonymous"
+			></script>
+		)}
 	</head>
 	<body>
 		<slot />
+		{gaMeasurementId && <AnalyticsConsent measurementId={gaMeasurementId} />}
 	</body>
 </html>
 

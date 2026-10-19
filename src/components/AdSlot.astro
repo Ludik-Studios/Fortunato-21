@@ -1,0 +1,66 @@
+---
+interface Props {
+	clientId?: string;
+	slotId?: string;
+}
+
+const { clientId, slotId } = Astro.props;
+const adsEnabled = import.meta.env.PROD && Boolean(clientId && slotId);
+---
+
+{adsEnabled ? (
+	<aside class="ad-region" aria-label="Anuncio">
+		<ins
+			class="adsbygoogle"
+			style="display:block"
+			data-ad-client={clientId}
+			data-ad-slot={slotId}
+			data-ad-format="auto"
+			data-full-width-responsive="true"
+		></ins>
+		<script is:inline>
+			(window.adsbygoogle = window.adsbygoogle || []).push({});
+		</script>
+	</aside>
+) : import.meta.env.DEV ? (
+	<aside class="ad-region ad-preview" aria-label="Vista previa del anuncio">
+		<span>ANUNCIO</span>
+		<strong>Espacio de AdSense</strong>
+		<small>Conecta una cuenta de editor aprobada para mostrar anuncios.</small>
+	</aside>
+) : null}
+
+<style>
+	.ad-region {
+		width: min(100%, 728px);
+		min-height: 90px;
+		margin: 12px auto 30px;
+	}
+	.adsbygoogle {
+		width: 100%;
+		min-height: 90px;
+	}
+	.ad-preview {
+		border: 1px dashed rgba(214, 229, 255, .38);
+		color: rgba(236, 242, 255, .72);
+		display: grid;
+		align-content: center;
+		justify-items: center;
+		gap: 5px;
+		font-family: 'Courier New', monospace;
+		text-align: center;
+	}
+	.ad-preview span {
+		font-size: 9px;
+		font-weight: 700;
+		letter-spacing: 1.4px;
+	}
+	.ad-preview strong {
+		color: #fff;
+		font-family: 'Arial Black', Impact, sans-serif;
+		font-size: 13px;
+	}
+	.ad-preview small {
+		font-size: 11px;
+	}
+</style>

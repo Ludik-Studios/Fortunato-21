@@ -1,0 +1,42 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const sessionId = Astro.url.searchParams.get('session_id');
+const stripeSecret = import.meta.env.STRIPE_SECRET_KEY;
+let donationConfirmed = false;
+
+if (sessionId && stripeSecret) {
+	try {
+		const { default: Stripe } = await import('stripe');
+		const stripe = new Stripe(stripeSecret);
+		const session = await stripe.checkout.sessions.retrieve(sessionId);
+		donationConfirmed = session.status === 'complete' && session.payment_status === 'paid' && session.metadata?.donation_type !== undefined;
+	} catch {
+		donationConfirmed = false;
+	}
+}
+
+if (!donationConfirmed) return Astro.redirect('/donate/');
+---
+
+<Layout title="Gracias | Ludik Hub" description="Gracias por apoyar a Ludik Studios." lang="es" gaMeasurementId={import.meta.env.PUBLIC_GA4_MEASUREMENT_ID}>
+	<main class="success-page">
+		<section>
+			<p class="success-kicker">LUDIK STUDIOS / GRACIAS</p>
+			<h1>Gracias por<br /><em>mantenernos en órbita.</em></h1>
+			<p>Tu donativo quedó confirmado. Gracias por ayudarnos a crear el próximo pequeño mundo.</p>
+			<a href="/">Volver a Ludik Hub <span aria-hidden="true">↗</span></a>
+		</section>
+	</main>
+</Layout>
+
+<style>
+	:global(body) { min-width: 320px; min-height: 100vh; margin: 0; color: #f4f2ff; background: radial-gradient(ellipse at 80% 10%,rgba(36,75,139,.35),transparent 37%),linear-gradient(155deg,#061326,#0b1d38 64%,#141a38); font-family: 'Trebuchet MS','Segoe UI',sans-serif; }
+	.success-page { min-height: 100svh; padding: 24px; display: grid; place-items: center; text-align: center; }
+	.success-page section { max-width: 590px; }
+	.success-kicker { color: #ffcf67; font: 700 10px 'Courier New',monospace; letter-spacing: 1.5px; }
+	.success-page h1 { margin: 18px 0; color: #fff; font: 900 clamp(48px,10vw,78px)/.92 Impact,'Arial Black',sans-serif; text-transform: uppercase; }
+	.success-page h1 em { color: #ffcf67; font-style: normal; }
+	.success-page p:not(.success-kicker) { color: #d4dced; font: 14px/1.7 'Courier New',monospace; }
+	.success-page a { margin-top: 20px; padding: 13px 16px; border: 1px solid rgba(255,207,103,.58); color: #ffcf67; display: inline-flex; gap: 18px; font: 700 11px 'Courier New',monospace; text-decoration: none; text-transform: uppercase; }
+</style>

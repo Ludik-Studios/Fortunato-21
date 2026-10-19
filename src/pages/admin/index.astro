@@ -1,0 +1,145 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const isAdmin = Astro.locals.isAdmin;
+if (import.meta.env.PROD && !isAdmin) {
+	return new Response('Not found', { status: 404 });
+}
+---
+
+<Layout title="Administración | Ludik Hub" description="Panel de administración de Ludik Hub." lang="es" gaMeasurementId={import.meta.env.PUBLIC_GA4_MEASUREMENT_ID}>
+	<main class="admin-page">
+		<header class="admin-header">
+			<a class="admin-brand" href="/">LUDIK <b>HUB</b><span>/ CENTRO DE CONTROL</span></a>
+			<div class="admin-user">
+				<span>{Astro.locals.user?.email ?? 'VISTA PREVIA DE ADMIN'}</span>
+				<a href="/">Ver sitio ↗</a>
+				{Astro.locals.user && <form method="POST" action="/api/auth/logout"><button class="admin-logout" type="submit">Cerrar sesión</button></form>}
+			</div>
+		</header>
+		<section class="admin-main" aria-labelledby="admin-title">
+			<div class="admin-heading">
+				<div>
+					<p class="admin-kicker">LUDIK STUDIOS / OPERACIONES</p>
+					<h1 id="admin-title">Resumen</h1>
+				</div>
+				<span class:list={['connection-state', { connected: isAdmin }]}>{isAdmin ? 'SESIÓN DE ADMIN' : 'MODO DE VISTA PREVIA'}</span>
+			</div>
+			{!isAdmin && <p class="preview-notice">Vista previa. Conecta Supabase y configura ADMIN_EMAIL para habilitar tu cuenta de administración protegida.</p>}
+			<div class="metric-grid" aria-label="Métricas del sitio">
+				<article class="metric"><span>VISITAS / 28 DÍAS</span><strong data-metric="visitors">—</strong><small>Google Analytics 4</small></article>
+				<article class="metric"><span>VISTAS DE PÁGINA / 28 DÍAS</span><strong data-metric="pageViews">—</strong><small>Google Analytics 4</small></article>
+				<article class="metric"><span>CLICS EN EL SITIO / 28 DÍAS</span><strong data-metric="clicks">—</strong><small>Clics medidos en navegación y donaciones</small></article>
+				<article class="metric"><span>DONATIVOS / 28 DÍAS</span><strong data-metric="donations">—</strong><small data-metric="donationCount">Totales de Stripe en MXN</small></article>
+			</div>
+			<section class="setup-section" aria-labelledby="setup-title">
+				<div>
+					<p class="admin-kicker">PRÓXIMAS CONEXIONES</p>
+					<h2 id="setup-title">Servicios</h2>
+				</div>
+				<ul>
+					<li><span class="service-mark">01</span><span><b>Supabase Auth</b><small>Registro, confirmación por correo y acceso de administración</small></span><span class="service-state" data-service-state="auth">PENDIENTE</span></li>
+					<li><span class="service-mark">02</span><span><b>Stripe Checkout</b><small>Donativos únicos y mensuales en MXN</small></span><span class="service-state" data-service-state="stripe">PENDIENTE</span></li>
+					<li><span class="service-mark">03</span><span><b>Google Analytics 4</b><small>Visitas, vistas de página y clics medidos</small></span><span class="service-state" data-service-state="ga4">PENDIENTE</span></li>
+				</ul>
+			</section>
+		</section>
+		<p class="metrics-status" data-metrics-status role="status" aria-live="polite"></p>
+	</main>
+</Layout>
+
+<script>
+	const metricsStatus = document.querySelector<HTMLElement>('[data-metrics-status]');
+	const metricElements = document.querySelectorAll<HTMLElement>('[data-metric]');
+
+	if (metricsStatus && metricElements.length) {
+		fetch('/api/admin/metrics')
+			.then(async (response) => {
+				if (!response.ok) throw new Error(response.status === 403
+					? 'Los informes reales requieren una cuenta de administración configurada en Supabase.'
+					: 'Configura las credenciales de GA4 y Stripe para cargar métricas reales.');
+				return response.json();
+			})
+			.then((metrics: { visitors: number | null; pageViews: number | null; clicks: number | null; donations: number | null; donationCount: number | null; services: { auth: boolean; ga4: boolean; stripe: boolean } }) => {
+				const numericMetrics = {
+					visitors: metrics.visitors,
+					pageViews: metrics.pageViews,
+					clicks: metrics.clicks,
+					donations: metrics.donations,
+					donationCount: metrics.donationCount,
+				};
+				for (const element of metricElements) {
+					const key = element.dataset.metric as keyof typeof numericMetrics;
+					const value = numericMetrics[key];
+					if (typeof value !== 'number') continue;
+					element.textContent = key === 'donations'
+						? new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(value)
+						: new Intl.NumberFormat('es-MX').format(value);
+				}
+				const donationCount = document.querySelector<HTMLElement>('[data-metric="donationCount"]');
+				if (donationCount && metrics.donationCount !== null) donationCount.textContent = `${new Intl.NumberFormat('es-MX').format(metrics.donationCount)} donativos realizados`;
+				for (const service of ['auth', 'ga4', 'stripe'] as const) {
+					const state = document.querySelector<HTMLElement>(`[data-service-state="${service}"]`);
+					if (!state) continue;
+					const active = service === 'auth' ? metrics.services.auth : metrics.services[service];
+					state.textContent = active ? 'CONECTADO' : 'PENDIENTE';
+					state.classList.toggle('service-connected', active);
+				}
+				const activeServices = Number(metrics.services.ga4) + Number(metrics.services.stripe);
+				metricsStatus.textContent = activeServices === 2
+					? 'Los totales reales corresponden a los últimos 28 días.'
+					: 'Configura las credenciales de GA4 y Stripe para cargar métricas reales.';
+			})
+			.catch((error: Error) => {
+				metricsStatus.textContent = error.message;
+			});
+	}
+</script>
+
+<style>
+	:global(*) { box-sizing: border-box; }
+	:global(body) { min-width: 320px; min-height: 100vh; margin: 0; color: #eef2ff; background: #0b1424; font-family: 'Trebuchet MS','Segoe UI',sans-serif; }
+	.admin-page { min-height: 100vh; }
+	.admin-header { min-height: 64px; padding: 0 clamp(20px,5vw,72px); border-bottom: 1px solid rgba(255,255,255,.12); display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+	.admin-brand { color: white; font-size: 13px; font-weight: 900; letter-spacing: 1.4px; text-decoration: none; }
+	.admin-brand b { color: #ffcb76; }
+	.admin-brand span { margin-left: 18px; color: #8393ae; font: 10px 'Courier New',monospace; letter-spacing: 1px; }
+	.admin-user { display: flex; align-items: center; gap: 18px; color: #aebbd0; font: 11px 'Courier New',monospace; }
+	.admin-user a { color: #ffcf67; text-decoration: none; }
+	.admin-logout { padding: 6px 8px; border: 1px solid rgba(255,255,255,.18); background: transparent; color: #dce5f4; cursor: pointer; font: 10px 'Courier New',monospace; }
+	.admin-main { width: min(1120px,100%); margin: auto; padding: 54px 24px 80px; }
+	.admin-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+	.admin-kicker { margin: 0 0 11px; color: #91a3bf; font: 700 10px 'Courier New',monospace; letter-spacing: 1.5px; }
+	.admin-heading h1 { margin: 0; color: #fff; font: 900 42px/.95 Impact,'Arial Black',sans-serif; text-transform: uppercase; }
+	.connection-state, .service-state { padding: 7px 9px; border: 1px solid rgba(255,207,103,.35); color: #ffcf67; font: 700 9px 'Courier New',monospace; letter-spacing: 1px; white-space: nowrap; }
+	.connection-state.connected { border-color: rgba(108,217,167,.42); color: #6cd9a7; }
+	.preview-notice { margin: 0 0 22px; padding: 13px 16px; border-left: 2px solid #ffcf67; background: rgba(255,207,103,.07); color: #d9deeb; font: 12px/1.6 'Courier New',monospace; }
+	.metric-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); border-top: 1px solid rgba(255,255,255,.14); border-bottom: 1px solid rgba(255,255,255,.14); }
+	.metric { min-height: 154px; padding: 22px 18px; border-right: 1px solid rgba(255,255,255,.12); display: flex; flex-direction: column; align-items: flex-start; }
+	.metric:first-child { border-left: 1px solid rgba(255,255,255,.12); }
+	.metric > span { color: #99a9c1; font: 700 9px 'Courier New',monospace; letter-spacing: 1px; }
+	.metric strong { margin: 18px 0 9px; color: #f4f6fb; font: 800 33px/1 'Arial Black',Impact,sans-serif; }
+	.metric small { color: #8896ac; font: 10px/1.5 'Courier New',monospace; }
+	.setup-section { margin-top: 54px; }
+	.metrics-status { min-height: 18px; margin: 12px 0 0; color: #91a3bf; font: 11px 'Courier New',monospace; }
+	.setup-section h2 { margin: 0; color: #fff; font: 800 24px Impact,'Arial Black',sans-serif; text-transform: uppercase; }
+	.setup-section ul { margin: 22px 0 0; padding: 0; border-top: 1px solid rgba(255,255,255,.12); list-style: none; }
+	.setup-section li { min-height: 76px; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.12); display: grid; grid-template-columns: 42px minmax(0,1fr) auto; align-items: center; gap: 14px; }
+	.service-mark { color: #ef7080; font: 700 11px 'Courier New',monospace; }
+	.setup-section li b, .setup-section li small { display: block; }
+	.setup-section li b { color: #edf1f8; font-size: 13px; }
+	.setup-section li small { margin-top: 5px; color: #8f9db2; font: 10px/1.5 'Courier New',monospace; }
+	.service-state.service-connected { border-color: rgba(108,217,167,.42); color: #6cd9a7; }
+	@media (max-width: 720px) {
+		.admin-header { padding-inline: 18px; }
+		.admin-brand span { display: block; margin: 6px 0 0; }
+		.admin-user { flex-direction: column; align-items: flex-end; gap: 6px; }
+		.admin-main { padding: 40px 18px 60px; }
+		.admin-heading { align-items: flex-start; flex-direction: column; }
+		.metric-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+		.metric:nth-child(3) { border-left: 1px solid rgba(255,255,255,.12); }
+		.metric:nth-child(n+3) { border-top: 1px solid rgba(255,255,255,.12); }
+		.setup-section li { grid-template-columns: 28px minmax(0,1fr); }
+		.service-state { grid-column: 2; width: fit-content; }
+	}
+</style>

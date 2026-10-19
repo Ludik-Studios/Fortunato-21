@@ -1,0 +1,91 @@
+---
+interface Props {
+	measurementId: string;
+}
+
+const { measurementId } = Astro.props;
+---
+
+<aside class="analytics-consent" data-analytics-consent data-measurement-id={measurementId} hidden>
+	<div>
+		<strong>Preferencias de análisis</strong>
+		<p>Permite que Google Analytics mida las visitas y los clics para ayudarnos a mejorar Ludik Hub. También puedes rechazar las mediciones opcionales.</p>
+	</div>
+	<div class="consent-actions">
+		<button type="button" data-consent-reject>Rechazar</button>
+		<button type="button" data-consent-accept>Permitir análisis</button>
+	</div>
+</aside>
+<button class="analytics-settings" type="button" data-consent-settings hidden>Preferencias de análisis</button>
+
+<script>
+	const consent = document.querySelector<HTMLElement>('[data-analytics-consent]');
+	const consentKey = 'ludik-analytics-consent';
+	type AnalyticsWindow = Window & {
+		dataLayer?: IArguments[];
+		gtag?: (...args: unknown[]) => void;
+	};
+
+	function startAnalytics(measurementId: string) {
+		const analyticsWindow = window as AnalyticsWindow;
+		if (analyticsWindow.gtag) {
+			analyticsWindow.gtag('consent', 'update', { analytics_storage: 'granted' });
+			return;
+		}
+
+		analyticsWindow.dataLayer = analyticsWindow.dataLayer || [];
+		analyticsWindow.gtag = function () { analyticsWindow.dataLayer?.push(arguments); };
+		analyticsWindow.gtag('consent', 'default', { analytics_storage: 'denied' });
+		analyticsWindow.gtag('consent', 'update', { analytics_storage: 'granted' });
+		analyticsWindow.gtag('js', new Date());
+		analyticsWindow.gtag('config', measurementId);
+		document.addEventListener('click', (event) => {
+			const target = event.target instanceof Element ? event.target.closest('[data-ga-event]') : null;
+			if (target) analyticsWindow.gtag?.('event', 'site_click', { item_name: target.getAttribute('data-ga-event') });
+		});
+
+		const script = document.createElement('script');
+		script.async = true;
+		script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
+		document.head.append(script);
+	}
+
+	if (consent) {
+		const measurementId = consent.dataset.measurementId;
+		const settingsButton = document.querySelector<HTMLButtonElement>('[data-consent-settings]');
+		const storedConsent = localStorage.getItem(consentKey);
+		if (storedConsent === 'accepted' && measurementId) startAnalytics(measurementId);
+		if (!storedConsent) consent.hidden = false;
+		if (settingsButton) settingsButton.hidden = !storedConsent;
+		settingsButton?.addEventListener('click', () => {
+			consent.hidden = false;
+			settingsButton.hidden = true;
+		});
+
+		consent.querySelector('[data-consent-accept]')?.addEventListener('click', () => {
+			localStorage.setItem(consentKey, 'accepted');
+			consent.hidden = true;
+			if (settingsButton) settingsButton.hidden = false;
+			if (measurementId) startAnalytics(measurementId);
+		});
+		consent.querySelector('[data-consent-reject]')?.addEventListener('click', () => {
+			localStorage.setItem(consentKey, 'rejected');
+			(window as AnalyticsWindow).gtag?.('consent', 'update', { analytics_storage: 'denied' });
+			consent.hidden = true;
+			if (settingsButton) settingsButton.hidden = false;
+		});
+	}
+</script>
+
+<style>
+	.analytics-consent { position: fixed; z-index: 20; right: 18px; bottom: 18px; width: min(560px,calc(100vw - 36px)); padding: 16px; border: 1px solid rgba(255,255,255,.28); background: #101e37; color: #f3f5fa; box-shadow: 0 12px 40px rgba(0,0,0,.35); display: flex; align-items: center; gap: 18px; }
+	.analytics-consent[hidden] { display: none; }
+	.analytics-settings { position: fixed; z-index: 19; right: 18px; bottom: 18px; min-height: 34px; padding: 7px 10px; border: 1px solid rgba(255,207,103,.55); background: #101e37; color: #ffcf67; cursor: pointer; font: 700 9px 'Courier New',monospace; }
+	.analytics-settings[hidden] { display: none; }
+	.analytics-consent strong { font: 800 12px 'Arial Black',Impact,sans-serif; text-transform: uppercase; }
+	.analytics-consent p { margin: 6px 0 0; color: #c0cbdd; font: 11px/1.5 'Courier New',monospace; }
+	.consent-actions { flex: 0 0 auto; display: grid; gap: 7px; }
+	.consent-actions button { min-height: 34px; padding: 7px 10px; border: 1px solid rgba(255,207,103,.55); background: transparent; color: #ffcf67; cursor: pointer; font: 700 9px 'Courier New',monospace; white-space: nowrap; }
+	.consent-actions [data-consent-accept] { background: #ffcf67; color: #17203a; }
+	@media (max-width:520px) { .analytics-consent { align-items: stretch; flex-direction: column; gap: 10px; } .consent-actions { grid-template-columns: 1fr 1fr; } }
+</style>

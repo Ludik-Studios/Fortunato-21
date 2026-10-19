@@ -1,0 +1,45 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AuthForm from './AuthForm.astro';
+
+interface Props {
+	mode: 'login' | 'register';
+}
+
+const { mode } = Astro.props;
+const isRegister = mode === 'register';
+const title = isRegister ? 'Crear cuenta' : 'Iniciar sesión';
+---
+
+<Layout title={`${title} | Ludik Hub`} description="Accede a tu cuenta de Ludik Hub." lang="es" gaMeasurementId={import.meta.env.PUBLIC_GA4_MEASUREMENT_ID}>
+	<main class="auth-page">
+		<a class="auth-brand" href="/">LUDIK <b>HUB</b></a>
+		<section class="auth-panel" aria-labelledby="auth-title">
+			<p class="auth-kicker"><span></span> CUENTA LUDIK</p>
+			<h1 id="auth-title">{isRegister ? 'Únete a la mesa.' : 'Qué bueno verte.'}</h1>
+			<p class="auth-intro">{isRegister ? 'Crea una cuenta para apoyar nuestros juegos y seguir en contacto.' : 'Inicia sesión para continuar en Ludik Hub.'}</p>
+			<AuthForm mode={mode} />
+			<p class="auth-switch">
+				{isRegister ? '¿Ya tienes una cuenta?' : '¿Primera vez en Ludik Hub?'}
+				<a href={isRegister ? '/login/' : '/register/'}>{isRegister ? 'Inicia sesión' : 'Crear cuenta'}</a>
+			</p>
+			<a class="back-home" href="/">Volver a Ludik Hub</a>
+		</section>
+	</main>
+</Layout>
+
+<style>
+	:global(*) { box-sizing: border-box; }
+	:global(body) { min-width: 320px; min-height: 100vh; margin: 0; color: #f5f3ff; background: radial-gradient(ellipse at 80% 10%, rgba(40,83,148,.3), transparent 35%), linear-gradient(155deg,#061326,#0b1d38 64%,#141a38); font-family: 'Trebuchet MS','Segoe UI',sans-serif; }
+	.auth-page { min-height: 100svh; padding: 26px 22px 50px; display: grid; grid-template-rows: auto 1fr; }
+	.auth-brand { width: fit-content; color: #fff; font-size: 14px; font-weight: 900; letter-spacing: 1.5px; text-decoration: none; }
+	.auth-brand b { color: #ffcb76; }
+	.auth-panel { width: min(100%, 440px); align-self: center; justify-self: center; padding: clamp(26px,6vw,46px); border: 1px solid rgba(214,229,255,.24); background: rgba(16,35,74,.76); box-shadow: 0 24px 64px rgba(0,0,0,.2); }
+	.auth-kicker { display: flex; align-items: center; gap: 9px; margin: 0 0 16px; color: #b5bdd5; font: 700 10px 'Courier New',monospace; letter-spacing: 1.4px; }
+	.auth-kicker span { width: 8px; height: 8px; background: #ffcf67; transform: rotate(45deg); }
+	.auth-panel h1 { margin: 0; color: #fff; font: 900 clamp(32px,8vw,48px)/.98 Impact,'Arial Black',sans-serif; text-transform: uppercase; }
+	.auth-intro { margin: 14px 0 22px; color: #d4dced; font: 14px/1.6 'Courier New',monospace; }
+	.auth-switch { margin: 14px 0; color: #c4cee4; font: 12px 'Courier New',monospace; }
+	.auth-switch a, .back-home { margin-left: 6px; color: #ffcf67; font-weight: 700; text-underline-offset: 3px; }
+	.back-home { margin: 8px 0 0; display: inline-block; font: 11px 'Courier New',monospace; }
+</style>

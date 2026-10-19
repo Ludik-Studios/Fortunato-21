@@ -1,0 +1,103 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
+const canceled = Astro.url.searchParams.has('canceled');
+const portalUnavailable = Astro.url.searchParams.has('portal');
+const user = Astro.locals.user;
+---
+
+<Layout title="Apoya a Ludik Studios" description="Apoya los juegos independientes creados por Ludik Studios." lang="es" gaMeasurementId={gaMeasurementId}>
+	<main class="donate-page">
+		<a class="donate-brand" href="/">LUDIK <b>HUB</b></a>
+		<section class="donate-main" aria-labelledby="donate-title">
+			<p class="donate-kicker"><span></span> MANTÉN EN ÓRBITA LOS JUEGOS INDIE</p>
+			<h1 id="donate-title">Impulsa el próximo<br /><em>pequeño mundo.</em></h1>
+			<p class="donate-intro">Tu apoyo ayuda a Ludik Studios a crear juegos independientes llenos de curiosidad. Elige un donativo único o apóyanos cada mes.</p>
+			{canceled && <p class="checkout-message" role="status">Cancelaste el pago. Puedes retomarlo cuando quieras.</p>}
+			{portalUnavailable && <p class="checkout-message" role="status">Aún no encontramos una suscripción asociada a esta cuenta.</p>}
+			<form class="donate-form" method="POST" action="/api/donations/checkout" data-donation-form>
+				<fieldset>
+					<legend>Elige un monto</legend>
+					<div class="amount-options">
+						{[50, 100, 200, 500, 1000].map((amount, index) => (
+							<label class="amount-option">
+								<input type="radio" name="amount" value={amount} checked={index === 1} />
+								<span>${new Intl.NumberFormat('es-MX').format(amount)} <small>MXN</small></span>
+							</label>
+						))}
+					</div>
+				</fieldset>
+				<fieldset>
+					<legend>Frecuencia</legend>
+					<div class="frequency-options">
+						<label><input type="radio" name="donationType" value="once" checked /><span>Una vez</span></label>
+						<label><input type="radio" name="donationType" value="monthly" /><span>Mensual</span></label>
+					</div>
+					{!user && <p class="monthly-note">Para administrar o cancelar un apoyo mensual necesitas una cuenta confirmada. <a href="/login/?next=%2Fdonate%2F">Inicia sesión</a> o <a href="/register/?next=%2Fdonate%2F">crea una cuenta</a>.</p>}
+				</fieldset>
+				<button type="submit" data-ga-event="donation_checkout_click">Continuar al pago seguro <span aria-hidden="true">↗</span></button>
+				<p class="checkout-note" data-checkout-note>El pago seguro se procesa con Stripe. Podrás revisar tu selección antes de pagar.</p>
+			</form>
+			{user && <form class="portal-form" method="POST" action="/api/donations/portal"><button type="submit">Administrar o cancelar apoyo mensual</button></form>}
+			<a class="donate-back" href="/">← Volver a Ludik Hub</a>
+		</section>
+	</main>
+</Layout>
+
+<script>
+	const donationForm = document.querySelector<HTMLFormElement>('[data-donation-form]');
+	const checkoutNote = document.querySelector<HTMLElement>('[data-checkout-note]');
+	if (donationForm && checkoutNote) {
+		donationForm.addEventListener('submit', (event) => {
+			const amount = donationForm.querySelector<HTMLInputElement>('input[name="amount"]:checked')?.value;
+			const type = donationForm.querySelector<HTMLInputElement>('input[name="donationType"]:checked')?.value;
+			if (type === 'monthly' && !document.querySelector('.portal-form')) {
+				checkoutNote.textContent = 'Inicia sesión con una cuenta confirmada para activar un apoyo mensual.';
+				event.preventDefault();
+				return;
+			}
+			if (amount && type) checkoutNote.textContent = `Preparando el pago ${type === 'monthly' ? 'mensual' : 'único'} de ${amount} MXN...`;
+			const button = donationForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+			if (button) button.disabled = true;
+			if (!amount || !type) event.preventDefault();
+		});
+	}
+</script>
+
+<style>
+	:global(*) { box-sizing: border-box; }
+	:global(body) { min-width: 320px; min-height: 100vh; margin: 0; color: #f4f2ff; background: radial-gradient(ellipse at 80% 10%,rgba(36,75,139,.35),transparent 37%),linear-gradient(155deg,#061326,#0b1d38 64%,#141a38); font-family: 'Trebuchet MS','Segoe UI',sans-serif; }
+	.donate-page { min-height: 100svh; padding: 26px 22px 50px; display: grid; grid-template-rows: auto 1fr; }
+	.donate-brand { width: fit-content; color: white; font-size: 14px; font-weight: 900; letter-spacing: 1.5px; text-decoration: none; }
+	.donate-brand b { color: #ffcb76; }
+	.donate-main { width: min(100%,700px); align-self: center; justify-self: center; padding: clamp(26px,6vw,54px); border: 1px solid rgba(214,229,255,.2); background: rgba(12,30,64,.77); box-shadow: 0 24px 64px rgba(0,0,0,.22); }
+	.donate-kicker { display: flex; align-items: center; gap: 9px; margin: 0 0 16px; color: #b5bdd5; font: 700 10px 'Courier New',monospace; letter-spacing: 1.4px; }
+	.donate-kicker span { width: 8px; height: 8px; background: #ef6873; transform: rotate(45deg); }
+	.donate-main h1 { margin: 0; color: #fff; font: 900 clamp(46px,9vw,76px)/.9 Impact,'Arial Black',sans-serif; text-transform: uppercase; }
+	.donate-main h1 em { color: #ffcf67; font-style: normal; }
+	.donate-intro { max-width: 540px; margin: 18px 0 26px; color: #d4dced; font: 14px/1.7 'Courier New',monospace; }
+	.donate-form { display: grid; gap: 20px; }
+	.donate-form fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+	.donate-form legend { margin-bottom: 10px; color: #f5f6fa; font: 700 11px 'Courier New',monospace; }
+	.amount-options { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 8px; }
+	.amount-option input, .frequency-options input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+	.amount-option span { min-height: 54px; padding: 8px 4px; border: 1px solid rgba(214,229,255,.24); color: #eaf0fa; display: grid; align-content: center; justify-items: center; font: 700 14px 'Courier New',monospace; cursor: pointer; }
+	.amount-option small { margin-top: 3px; color: #9aa9c1; font-size: 8px; }
+	.amount-option input:checked + span { border-color: #ffcf67; background: rgba(255,207,103,.1); color: #ffcf67; }
+	.amount-option input:focus-visible + span, .frequency-options input:focus-visible + span { outline: 2px solid white; outline-offset: 2px; }
+	.frequency-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+	.frequency-options label { cursor: pointer; }
+	.frequency-options span { min-height: 44px; border: 1px solid rgba(214,229,255,.24); color: #dce5f4; display: grid; place-items: center; font: 700 11px 'Courier New',monospace; }
+	.frequency-options input:checked + span { border-color: #ffcf67; color: #ffcf67; background: rgba(255,207,103,.1); }
+	.donate-form button { min-height: 48px; padding: 10px 14px; border: 1px solid #ffcf67; background: #ffcf67; color: #17203a; display: flex; align-items: center; justify-content: space-between; cursor: pointer; font: 900 11px 'Arial Black',Impact,sans-serif; text-transform: uppercase; }
+	.donate-form button:disabled { cursor: wait; opacity: .68; }
+	.checkout-note { min-height: 18px; margin: -12px 0 0; color: #94a4bd; font: 10px/1.5 'Courier New',monospace; }
+	.checkout-message { padding: 10px 12px; border-left: 2px solid #ffcf67; background: rgba(255,207,103,.08); color: #ffdf9d; font: 12px/1.5 'Courier New',monospace; }
+	.monthly-note { margin: 10px 0 0; color: #9baac0; font: 10px/1.6 'Courier New',monospace; }
+	.monthly-note a { color: #ffcf67; }
+	.portal-form { margin-top: 14px; }
+	.portal-form button { padding: 8px 0; border: 0; background: transparent; color: #ffcf67; cursor: pointer; font: 11px 'Courier New',monospace; text-decoration: underline; text-underline-offset: 3px; }
+	.donate-back { margin-top: 20px; color: #ffcf67; display: inline-block; font: 11px 'Courier New',monospace; text-underline-offset: 3px; }
+	@media (max-width:520px) { .amount-options { grid-template-columns: repeat(3,minmax(0,1fr)); } }
+</style>
