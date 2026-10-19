@@ -103,13 +103,9 @@
 
 
       } else {
-        var resizeUnityCanvas = function() {
-          var scale = Math.min(1, window.innerWidth / 960, Math.max(0, window.innerHeight - 38) / 600);
-          canvas.style.width = Math.floor(960 * scale) + "px";
-          canvas.style.height = Math.floor(600 * scale) + "px";
-        };
-        resizeUnityCanvas();
-        window.addEventListener("resize", resizeUnityCanvas);
+        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
+        canvas.style.width = "960px";
+        canvas.style.height = "600px";
       }
 
       document.querySelector("#unity-loading-bar").style.display = "block";
