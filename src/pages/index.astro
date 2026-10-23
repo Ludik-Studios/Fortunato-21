@@ -52,6 +52,13 @@ const currentUser = Astro.locals.user;
 						allowfullscreen
 					></iframe>
 				</div>
+				<button class="game-fullscreen-button" type="button" data-game-fullscreen aria-pressed="false">
+					<svg aria-hidden="true" viewBox="0 0 24 24">
+						<path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3" />
+					</svg>
+					<span data-game-fullscreen-label>Jugar en pantalla completa</span>
+				</button>
+				<p class="game-fullscreen-status" data-game-fullscreen-status role="status" aria-live="polite"></p>
 				<div class="frame-cards" aria-hidden="true">
 					<div class="frame-card frame-card-back"><span>Q</span><b>♠</b></div>
 					<div class="frame-card frame-card-front"><span>J</span><b>♦</b></div>
@@ -82,6 +89,60 @@ const currentUser = Astro.locals.user;
 		</section>
 	</main>
 </Layout>
+
+<script>
+	const gameFrame = document.querySelector('.game-frame');
+	const fullscreenButton = document.querySelector('[data-game-fullscreen]');
+	const fullscreenLabel = document.querySelector('[data-game-fullscreen-label]');
+	const fullscreenStatus = document.querySelector('[data-game-fullscreen-status]');
+	const fallbackClass = 'game-frame--fullscreen-fallback';
+
+	if (
+		gameFrame instanceof HTMLElement &&
+		fullscreenButton instanceof HTMLButtonElement &&
+		fullscreenLabel instanceof HTMLSpanElement &&
+		fullscreenStatus instanceof HTMLParagraphElement
+	) {
+		const updateFullscreenButton = () => {
+			const isFullscreen =
+				document.fullscreenElement === gameFrame || gameFrame.classList.contains(fallbackClass);
+			fullscreenLabel.textContent = isFullscreen
+				? 'Salir de pantalla completa'
+				: 'Jugar en pantalla completa';
+			fullscreenButton.setAttribute('aria-pressed', String(isFullscreen));
+		};
+
+		document.addEventListener('fullscreenchange', updateFullscreenButton);
+		fullscreenButton.addEventListener('click', async () => {
+			if (gameFrame.classList.contains(fallbackClass)) {
+				gameFrame.classList.remove(fallbackClass);
+				document.documentElement.classList.remove(fallbackClass);
+				fullscreenStatus.textContent = '';
+				updateFullscreenButton();
+				return;
+			}
+
+			if (document.fullscreenElement === gameFrame) {
+				await document.exitFullscreen();
+				return;
+			}
+
+			try {
+				if (typeof gameFrame.requestFullscreen !== 'function') {
+					throw new Error('Fullscreen API is unavailable');
+				}
+				await gameFrame.requestFullscreen();
+				fullscreenStatus.textContent = '';
+			} catch {
+				gameFrame.classList.add(fallbackClass);
+				document.documentElement.classList.add(fallbackClass);
+				fullscreenStatus.textContent =
+					'El navegador no permite el modo inmersivo; el juego ocupará toda la pantalla disponible.';
+				updateFullscreenButton();
+			}
+		});
+	}
+</script>
 
 <style>
 	:global(*) { box-sizing: border-box; }
@@ -277,9 +338,33 @@ const currentUser = Astro.locals.user;
 		background-size: 41px 37px, auto, auto, auto;
 		isolation: isolate;
 	}
+	.game-frame:fullscreen,
+	.game-frame--fullscreen-fallback {
+		position: fixed;
+		inset: 0;
+		z-index: 9999;
+		width: 100vw;
+		height: 100vh;
+		height: 100dvh;
+		max-width: none;
+		margin: 0;
+		aspect-ratio: auto;
+		border: 0;
+		background: #080d17;
+	}
 	.game-frame::before { content: ''; position: absolute; inset: 7px; z-index: 2; border: 1px solid rgba(196,224,255,.45); pointer-events: none; }
     .game-interface { position: absolute; inset: 12px 14px; overflow: hidden; border: 2px solid #07152b; background: #080d17; }   
 	.unity-player { width: 100%; height: 100%; position: absolute; inset: 0; border: 0; background: #080d17; }
+	.game-frame:fullscreen::before,
+	.game-frame--fullscreen-fallback::before,
+	.game-frame:fullscreen .frame-cards,
+	.game-frame:fullscreen .frame-dice,
+	.game-frame--fullscreen-fallback .frame-cards,
+	.game-frame--fullscreen-fallback .frame-dice { display: none; }
+	.game-frame:fullscreen .game-interface,
+	.game-frame--fullscreen-fallback .game-interface { inset: 0; border: 0; }
+	.game-fullscreen-button { display: none; }
+	.game-fullscreen-status { display: none; }
 	.game-placeholder { position: absolute; inset: 0; padding: 24px; display: grid; align-content: center; justify-items: center; gap: 10px; color: rgba(255,255,255,.84); text-align: center; font-family: 'Courier New', monospace; }
 	.game-placeholder strong { color: #fff; font-family: 'Arial Black', Impact, sans-serif; font-size: 17px; }
 	.game-placeholder span { max-width: 440px; font-size: 13px; line-height: 1.5; }
@@ -336,6 +421,45 @@ const currentUser = Astro.locals.user;
 		.feature { margin: 28px 0 22px; gap: 14px; }
 		.game-frame { height: clamp(420px, 100vw, 560px); min-height: 0; aspect-ratio: auto; }
 		.game-interface { inset: 22px; }
+		.game-fullscreen-button {
+			position: absolute;
+			right: calc(12px + env(safe-area-inset-right));
+			bottom: calc(12px + env(safe-area-inset-bottom));
+			z-index: 4;
+			min-height: 44px;
+			padding: 10px 14px;
+			border: 1px solid rgba(255,255,255,.75);
+			border-radius: 6px;
+			background: #4e3473;
+			color: #fff;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 9px;
+			font: 700 12px/1.2 'Trebuchet MS', 'Segoe UI', sans-serif;
+			cursor: pointer;
+			touch-action: manipulation;
+		}
+		.game-fullscreen-button:focus-visible { outline: 3px solid #ffcb76; outline-offset: 3px; }
+		.game-fullscreen-button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
+		.game-fullscreen-status:not(:empty) {
+			position: absolute;
+			right: 12px;
+			bottom: calc(68px + env(safe-area-inset-bottom));
+			z-index: 4;
+			max-width: min(320px, calc(100% - 24px));
+			margin: 0;
+			padding: 8px 10px;
+			border-radius: 4px;
+			background: rgba(7, 21, 43, .92);
+			color: #fff;
+			font-size: 11px;
+			line-height: 1.4;
+		}
+		:global(html.game-frame--fullscreen-fallback),
+		:global(html.game-frame--fullscreen-fallback body) { overflow: hidden; }
+		:global(html.game-frame--fullscreen-fallback .hub-shell) { z-index: 9999; }
+		:global(html.game-frame--fullscreen-fallback .feature) { animation: none; transform: none; }
 		.frame-cards { transform: scale(.8); transform-origin: bottom left; }
 		.frame-dice { transform: scale(.82) rotate(-7deg); transform-origin: top right; }
 		.game-info { padding: 28px 24px; }
