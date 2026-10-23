@@ -4,7 +4,6 @@
 import Layout from '../layouts/Layout.astro';
 import AdSlot from '../components/AdSlot.astro';
 
-const unityGameUrl = import.meta.env.PUBLIC_UNITY_GAME_URL;
 const adsenseClientId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID;
 const adsenseEnabled = import.meta.env.PROD && adsenseClientId;   
 const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
@@ -45,20 +44,13 @@ const currentUser = Astro.locals.user;
 		<section class="feature" id="home" aria-label="Juego destacado">
 			<div class="game-frame" aria-label="Juego de Unity Fortunato 21">
 				<div class="game-interface">
-					{unityGameUrl ? (
-						<iframe
-							class="unity-player"
-							src={unityGameUrl}
-							title="Fortunato 21"
-							allow="autoplay; fullscreen; gamepad"
-							allowfullscreen
-						></iframe>
-					) : (
-						<div class="game-placeholder">
-							<strong>La build WebGL de Unity aún no está configurada</strong>
-							<span>PUBLIC_UNITY_GAME_URL con la URL del archivo index.html del juego alojado.</span>
-						</div>
-					)}
+					<iframe
+						class="unity-player"
+						src="/game/build/index.html"
+						title="Fortunato 21"
+						allow="autoplay; fullscreen; gamepad"
+						allowfullscreen
+					></iframe>
 				</div>
 				<div class="frame-cards" aria-hidden="true">
 					<div class="frame-card frame-card-back"><span>Q</span><b>♠</b></div>

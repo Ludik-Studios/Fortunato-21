@@ -43,11 +43,7 @@ All commands are run from the root of the project, from a terminal:
 
 ## Unity WebGL game
 
-Export the Unity project as a WebGL build and host the complete build output. Set `PUBLIC_UNITY_GAME_URL` in a `.env` file to the hosted build's `index.html` URL:
-
-```env
-PUBLIC_UNITY_GAME_URL=https://your-domain.example/fortunato-21/index.html
-```
+The Unity WebGL build in `public/game/build` is loaded in the main player area. Replace that folder's contents with the complete output of a new WebGL export to update the game.
 
 The game is embedded in the main player area. The host must allow the site to embed the page in an iframe. Restart the dev server after changing `.env`.
 
