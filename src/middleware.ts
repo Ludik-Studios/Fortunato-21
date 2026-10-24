@@ -20,7 +20,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 		responseHeaders,
 	});
 	const { data, error } = await supabase.auth.getClaims();
-	const claims = error ? null : data.claims;
+	const claims = error ? null : data?.claims;
 	const id = typeof claims?.sub === 'string' ? claims.sub : null;
 	const email = typeof claims?.email === 'string' ? claims.email : null;
 	const adminEmail = import.meta.env.ADMIN_EMAIL?.trim().toLowerCase();

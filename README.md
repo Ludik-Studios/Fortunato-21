@@ -64,9 +64,11 @@ The app uses Astro server rendering on Netlify, Supabase Auth, Stripe Checkout, 
 
 ### Supabase Auth
 
-1. Create a Supabase project and set `PUBLIC_SUPABASE_URL` and `PUBLIC_SUPABASE_PUBLISHABLE_KEY` from the project API settings.
-2. Keep email confirmation enabled. In Authentication URL settings, allow `http://localhost:4321/auth/callback` and your deployed domain's `/auth/callback` URL.
-3. Set `ADMIN_EMAIL` to the exact email address you use for the administrator account. Register that address through the site and confirm it. The admin route compares against this server-only value; there is no default password or public admin account.
+1. Create a Supabase project. Supabase creates and manages its PostgreSQL database and the `auth.users` table for accounts; the site does not store passwords itself or require a separate users table.
+2. In the project's API settings, copy its Project URL and publishable key into `PUBLIC_SUPABASE_URL` and `PUBLIC_SUPABASE_PUBLISHABLE_KEY` in your local `.env`. Add the same two values to the Netlify site's environment variables for production. These are the only Supabase credentials exposed to the browser; never use a service-role key in a `PUBLIC_` variable.
+3. Keep email confirmation enabled. In Authentication URL settings, set the site URL to your deployed origin and allow `http://localhost:4321/auth/callback` and `https://your-domain/auth/callback` as redirect URLs.
+4. Start the site with `npm run dev`, register at `/register/`, and follow the confirmation link. Sign in at `/login/`; the server reads the resulting session cookie for protected pages. The site's registration and login forms are already connected to Supabase Auth.
+5. Set `ADMIN_EMAIL` to the exact email address you use for the administrator account. Register that address through the site and confirm it. The admin route compares against this server-only value; there is no default password or public admin account.
 
 ### Stripe donations
 
