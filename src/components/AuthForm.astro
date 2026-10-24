@@ -84,9 +84,22 @@ const isRegister = mode === 'register';
 							options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
 						});
 						if (error) {
-							status.textContent = error.message.includes('already registered')
-								? 'Ya existe una cuenta con ese correo.'
-								: 'No se pudo crear la cuenta. Comprueba el correo y la contraseña e inténtalo de nuevo.';
+							const errorCode = error.code?.toLowerCase() ?? '';
+							const errorMessage = error.message.toLowerCase();
+
+							if (errorCode === 'user_already_exists' || errorMessage.includes('already registered')) {
+								status.textContent = 'Ya existe una cuenta con ese correo. Inicia sesión en su lugar.';
+							} else if (errorCode === 'email_address_invalid' || errorMessage.includes('invalid email')) {
+								status.textContent = 'El correo electrónico no es válido. Revísalo e inténtalo de nuevo.';
+							} else if (errorCode === 'weak_password' || errorMessage.includes('password should')) {
+								status.textContent = `La contraseña no cumple los requisitos: ${error.message}`;
+							} else if (errorCode === 'over_email_send_rate_limit' || errorMessage.includes('rate limit')) {
+								status.textContent = 'Se solicitaron demasiados correos en poco tiempo. Espera unos minutos e inténtalo de nuevo.';
+							} else if (errorCode === 'signup_disabled' || errorMessage.includes('signups not allowed')) {
+								status.textContent = 'El registro está deshabilitado en Supabase. Activa los registros por correo en la configuración de Auth.';
+							} else {
+								status.textContent = `Supabase rechazó el registro: ${error.message}`;
+							}
 							return;
 						}
 						if (data.session) {
