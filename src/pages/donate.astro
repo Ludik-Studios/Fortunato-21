@@ -3,7 +3,9 @@ import Layout from '../layouts/Layout.astro';
 
 const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
 const canceled = Astro.url.searchParams.has('canceled');
+const pending = Astro.url.searchParams.has('pending');
 const portalUnavailable = Astro.url.searchParams.has('portal');
+const portalCancelled = Astro.url.searchParams.get('portal') === 'cancelled';
 const user = Astro.locals.user;
 ---
 
@@ -15,7 +17,9 @@ const user = Astro.locals.user;
 			<h1 id="donate-title">Impulsa el próximo<br /><em>pequeño mundo.</em></h1>
 			<p class="donate-intro">Tu apoyo ayuda a Ludik Studios a crear juegos independientes llenos de curiosidad. Elige un donativo único o apóyanos cada mes.</p>
 			{canceled && <p class="checkout-message" role="status">Cancelaste el pago. Puedes retomarlo cuando quieras.</p>}
-			{portalUnavailable && <p class="checkout-message" role="status">Aún no encontramos una suscripción asociada a esta cuenta.</p>}
+			{pending && <p class="checkout-message" role="status">Tu pago aún está pendiente. Mercado Pago te avisará cuando se actualice.</p>}
+			{portalUnavailable && <p class="checkout-message" role="status">Aún no encontramos una suscripción mensual activa asociada a esta cuenta.</p>}
+			{portalCancelled && <p class="checkout-message" role="status">Cancelamos tu apoyo mensual. Puedes volver a donar cuando quieras.</p>}
 			<form class="donate-form" method="POST" action="/api/donations/checkout" data-donation-form>
 				<fieldset>
 					<legend>Elige un monto</legend>
@@ -34,10 +38,11 @@ const user = Astro.locals.user;
 						<label><input type="radio" name="donationType" value="once" checked /><span>Una vez</span></label>
 						<label><input type="radio" name="donationType" value="monthly" /><span>Mensual</span></label>
 					</div>
-					{!user && <p class="monthly-note">Para administrar o cancelar un apoyo mensual necesitas una cuenta confirmada. <a href="/login/?next=%2Fdonate%2F">Inicia sesión</a> o <a href="/register/?next=%2Fdonate%2F">crea una cuenta</a>.</p>}
+					{!user && <p class="monthly-note">Para administrar o cancelar un apoyo mensual necesitas una cuenta confirmada y usar ese mismo correo en Mercado Pago. <a href="/login/?next=%2Fdonate%2F">Inicia sesión</a> o <a href="/register/?next=%2Fdonate%2F">crea una cuenta</a>.</p>}
+					{user && <p class="monthly-note">Usa en Mercado Pago el mismo correo de tu cuenta para poder administrar o cancelar tu apoyo mensual.</p>}
 				</fieldset>
 				<button type="submit" data-ga-event="donation_checkout_click">Continuar al pago seguro <span aria-hidden="true">↗</span></button>
-				<p class="checkout-note" data-checkout-note>El pago seguro se procesa con Stripe. Podrás revisar tu selección antes de pagar.</p>
+				<p class="checkout-note" data-checkout-note>El pago seguro se procesa con Mercado Pago. Podrás revisar tu selección antes de pagar.</p>
 			</form>
 			{user && <form class="portal-form" method="POST" action="/api/donations/portal"><button type="submit">Administrar o cancelar apoyo mensual</button></form>}
 			<a class="donate-back" href="/">← Volver a Ludik Hub</a>

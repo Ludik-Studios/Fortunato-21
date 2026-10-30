@@ -60,7 +60,7 @@ The ad slot stays as a local preview during development and only loads real ads 
 
 ## Accounts, donations, and analytics
 
-The app uses Astro server rendering on Netlify, Supabase Auth, Stripe Checkout, and GA4. Copy `.env.example` to `.env` for local setup; never commit `.env` or add secret keys to variables prefixed with `PUBLIC_`.
+The app uses Astro server rendering on Netlify, Supabase Auth, Mercado Pago Checkout Pro, and GA4. Copy `.env.example` to `.env` for local setup; never commit `.env` or add secret keys to variables prefixed with `PUBLIC_`.
 
 ### Supabase Auth
 
@@ -70,9 +70,9 @@ The app uses Astro server rendering on Netlify, Supabase Auth, Stripe Checkout, 
 4. Start the site with `npm run dev`, register at `/register/`, and follow the confirmation link. Sign in at `/login/`; the server reads the resulting session cookie for protected pages. The site's registration and login forms are already connected to Supabase Auth.
 5. Set `ADMIN_EMAIL` to the exact email address you use for the administrator account. Register that address through the site and confirm it. The admin route compares against this server-only value; there is no default password or public admin account.
 
-### Stripe donations
+### Mercado Pago donations
 
-Create a Stripe account, start in test mode, and set `STRIPE_SECRET_KEY` to its test secret. Configure the Stripe customer portal to let customers cancel subscriptions. One-time and monthly donations use server-defined amounts of MXN 50, 100, 200, 500, or 1,000. Monthly support requires a signed-in account so donors can open the portal and manage or cancel it. Switch to a live secret only after reviewing your business, tax, and donation obligations.
+Create a Mercado Pago seller account and an application in [Your integrations](https://www.mercadopago.com.mx/developers/panel/app). Set `MERCADO_PAGO_ACCESS_TOKEN` to the application's test access token for development, then use the production access token in Netlify after testing. Keep this token private; it must never use a `PUBLIC_` prefix. Checkout Pro redirects donors to Mercado Pago to complete one-time payments, and Mercado Pago Subscriptions handles monthly donations. One-time and monthly donations use server-defined amounts of MXN 50, 100, 200, 500, or 1,000. Monthly support requires a signed-in account so donors can cancel their Ludik Studios subscription from the donation page. The success page verifies payment status against Mercado Pago before confirming the donation, and the admin dashboard reads approved donation payments from its API. Mercado Pago does not charge a fixed monthly fee for this integration, but payment processing fees may apply. Review its current rates and your business, tax, and donation obligations before going live.
 
 ### Google Analytics 4
 
@@ -80,7 +80,7 @@ Create a Stripe account, start in test mode, and set `STRIPE_SECRET_KEY` to its 
 2. Enable the Google Analytics Data API in Google Cloud. Create a service account, grant its email Viewer access to the GA4 property, and set `GA4_PROPERTY_ID` and `GA4_SERVICE_ACCOUNT_JSON` as private server environment variables. Never put service-account credentials in a `PUBLIC_` variable.
 3. Accept the site's analytics consent prompt to allow GA4 to load. Visitors can reopen Analytics settings to change their choice. Custom `site_click` events cover links and buttons marked with `data-ga-event`.
 
-The `/admin/` dashboard is protected by Supabase session verification and `ADMIN_EMAIL`. Its visitor, page-view, and click figures come from GA4; donation totals come from completed one-time Stripe Checkout sessions and paid subscription invoices over the last 28 days. The report is only live after the matching provider credentials are configured.
+The `/admin/` dashboard is protected by Supabase session verification and `ADMIN_EMAIL`. Its visitor, page-view, and click figures come from GA4; donation totals come from approved Mercado Pago payments associated with one-time donations and monthly subscriptions over the last 28 days. The report is only live after the matching provider credentials are configured.
 
 Deploy with Netlify's Astro framework support so the generated server function handles auth and API routes. Add every variable from `.env.example` to the Netlify site's environment settings, using production secrets there.
 

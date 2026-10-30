@@ -30,7 +30,7 @@ if (import.meta.env.PROD && !isAdmin) {
 				<article class="metric"><span>VISITAS / 28 DÍAS</span><strong data-metric="visitors">—</strong><small>Google Analytics 4</small></article>
 				<article class="metric"><span>VISTAS DE PÁGINA / 28 DÍAS</span><strong data-metric="pageViews">—</strong><small>Google Analytics 4</small></article>
 				<article class="metric"><span>CLICS EN EL SITIO / 28 DÍAS</span><strong data-metric="clicks">—</strong><small>Clics medidos en navegación y donaciones</small></article>
-				<article class="metric"><span>DONATIVOS / 28 DÍAS</span><strong data-metric="donations">—</strong><small data-metric="donationCount">Totales de Stripe en MXN</small></article>
+				<article class="metric"><span>DONATIVOS / 28 DÍAS</span><strong data-metric="donations">—</strong><small data-metric="donationCount">Totales de Mercado Pago en MXN</small></article>
 			</div>
 			<section class="setup-section" aria-labelledby="setup-title">
 				<div>
@@ -39,7 +39,7 @@ if (import.meta.env.PROD && !isAdmin) {
 				</div>
 				<ul>
 					<li><span class="service-mark">01</span><span><b>Supabase Auth</b><small>Registro, confirmación por correo y acceso de administración</small></span><span class="service-state" data-service-state="auth">PENDIENTE</span></li>
-					<li><span class="service-mark">02</span><span><b>Stripe Checkout</b><small>Donativos únicos y mensuales en MXN</small></span><span class="service-state" data-service-state="stripe">PENDIENTE</span></li>
+					<li><span class="service-mark">02</span><span><b>Mercado Pago</b><small>Donativos únicos y mensuales en MXN</small></span><span class="service-state" data-service-state="mercadoPago">PENDIENTE</span></li>
 					<li><span class="service-mark">03</span><span><b>Google Analytics 4</b><small>Visitas, vistas de página y clics medidos</small></span><span class="service-state" data-service-state="ga4">PENDIENTE</span></li>
 				</ul>
 			</section>
@@ -57,10 +57,10 @@ if (import.meta.env.PROD && !isAdmin) {
 			.then(async (response) => {
 				if (!response.ok) throw new Error(response.status === 403
 					? 'Los informes reales requieren una cuenta de administración configurada en Supabase.'
-					: 'Configura las credenciales de GA4 y Stripe para cargar métricas reales.');
+					: 'Configura las credenciales de GA4 y Mercado Pago para cargar métricas reales.');
 				return response.json();
 			})
-			.then((metrics: { visitors: number | null; pageViews: number | null; clicks: number | null; donations: number | null; donationCount: number | null; services: { auth: boolean; ga4: boolean; stripe: boolean } }) => {
+			.then((metrics: { visitors: number | null; pageViews: number | null; clicks: number | null; donations: number | null; donationCount: number | null; services: { auth: boolean; ga4: boolean; mercadoPago: boolean } }) => {
 				const numericMetrics = {
 					visitors: metrics.visitors,
 					pageViews: metrics.pageViews,
@@ -78,17 +78,17 @@ if (import.meta.env.PROD && !isAdmin) {
 				}
 				const donationCount = document.querySelector<HTMLElement>('[data-metric="donationCount"]');
 				if (donationCount && metrics.donationCount !== null) donationCount.textContent = `${new Intl.NumberFormat('es-MX').format(metrics.donationCount)} donativos realizados`;
-				for (const service of ['auth', 'ga4', 'stripe'] as const) {
+				for (const service of ['auth', 'ga4', 'mercadoPago'] as const) {
 					const state = document.querySelector<HTMLElement>(`[data-service-state="${service}"]`);
 					if (!state) continue;
 					const active = service === 'auth' ? metrics.services.auth : metrics.services[service];
 					state.textContent = active ? 'CONECTADO' : 'PENDIENTE';
 					state.classList.toggle('service-connected', active);
 				}
-				const activeServices = Number(metrics.services.ga4) + Number(metrics.services.stripe);
+				const activeServices = Number(metrics.services.ga4) + Number(metrics.services.mercadoPago);
 				metricsStatus.textContent = activeServices === 2
 					? 'Los totales reales corresponden a los últimos 28 días.'
-					: 'Configura las credenciales de GA4 y Stripe para cargar métricas reales.';
+					: 'Configura las credenciales de GA4 y Mercado Pago para cargar métricas reales.';
 			})
 			.catch((error: Error) => {
 				metricsStatus.textContent = error.message;

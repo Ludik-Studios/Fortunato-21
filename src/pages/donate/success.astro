@@ -1,30 +1,70 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { mercadoPagoRequest } from '../../lib/mercado-pago';
 
-const sessionId = Astro.url.searchParams.get('session_id');
-const stripeSecret = import.meta.env.STRIPE_SECRET_KEY;
+const paymentId = Astro.url.searchParams.get('payment_id');
+const subscriptionId = Astro.url.searchParams.get('preapproval_id');
 let donationConfirmed = false;
+let donationPending = false;
+let verificationFailed = false;
+const donationAmounts = new Set([50, 100, 200, 500, 1000]);
 
-if (sessionId && stripeSecret) {
+if (paymentId || subscriptionId) {
 	try {
-		const { default: Stripe } = await import('stripe');
-		const stripe = new Stripe(stripeSecret);
-		const session = await stripe.checkout.sessions.retrieve(sessionId);
-		donationConfirmed = session.status === 'complete' && session.payment_status === 'paid' && session.metadata?.donation_type !== undefined;
-	} catch {
-		donationConfirmed = false;
+		if (!import.meta.env.MERCADO_PAGO_ACCESS_TOKEN) throw new Error('Mercado Pago is not configured.');
+
+		if (paymentId) {
+			const payment = await mercadoPagoRequest<{
+				status?: string;
+				currency_id?: string;
+				transaction_amount?: number;
+				external_reference?: string;
+			}>(`/v1/payments/${encodeURIComponent(paymentId)}`);
+			const isDonation = payment.external_reference?.startsWith('ludik-donation-once-')
+				&& payment.currency_id === 'MXN'
+				&& donationAmounts.has(payment.transaction_amount ?? 0);
+			donationConfirmed = Boolean(isDonation && payment.status === 'approved');
+			donationPending = Boolean(isDonation && (payment.status === 'pending' || payment.status === 'in_process'));
+		} else if (subscriptionId) {
+			const subscription = await mercadoPagoRequest<{
+				status?: string;
+				reason?: string;
+				external_reference?: string;
+				auto_recurring?: { currency_id?: string; transaction_amount?: number | string };
+			}>(`/preapproval/${encodeURIComponent(subscriptionId)}`);
+			const isDonation = subscription.external_reference?.startsWith('ludik-donation-monthly-')
+				&& subscription.reason?.startsWith('Donativo mensual a Ludik Studios de $')
+				&& subscription.auto_recurring?.currency_id === 'MXN'
+				&& donationAmounts.has(Number(subscription.auto_recurring.transaction_amount));
+			donationConfirmed = Boolean(isDonation && subscription.status === 'authorized');
+			donationPending = Boolean(isDonation && subscription.status === 'pending');
+		}
+	} catch (error) {
+		console.error('Mercado Pago donation verification failed:', error);
+		verificationFailed = true;
 	}
 }
 
-if (!donationConfirmed) return Astro.redirect('/donate/');
+if (!donationConfirmed && !donationPending && !verificationFailed) return Astro.redirect('/donate/');
 ---
 
 <Layout title="Gracias | Ludik Hub" description="Gracias por apoyar a Ludik Studios." lang="es" gaMeasurementId={import.meta.env.PUBLIC_GA4_MEASUREMENT_ID}>
 	<main class="success-page">
 		<section>
-			<p class="success-kicker">LUDIK STUDIOS / GRACIAS</p>
-			<h1>Gracias por<br /><em>mantenernos en órbita.</em></h1>
-			<p>Tu donativo quedó confirmado. Gracias por ayudarnos a crear el próximo pequeño mundo.</p>
+			<p class="success-kicker">{donationConfirmed ? 'LUDIK STUDIOS / GRACIAS' : 'LUDIK STUDIOS / DONATIVO'}</p>
+			{donationConfirmed ? (
+				<>
+					<h1>Gracias por<br /><em>mantenernos en órbita.</em></h1>
+					<p>Tu donativo quedó confirmado. Gracias por ayudarnos a crear el próximo pequeño mundo.</p>
+				</>
+			) : (
+				<>
+					<h1>{donationPending ? 'Tu donativo<br /><em>está en proceso.</em>' : 'No pudimos<br /><em>confirmar el pago.</em>'}</h1>
+					<p>{donationPending
+						? 'Mercado Pago todavía está procesando el pago o la autorización mensual. Revisa tu cuenta de Mercado Pago para ver el estado.'
+						: 'No logramos verificar el estado con Mercado Pago. Si el cobro aparece en tu cuenta, contáctanos antes de volver a intentarlo.'}</p>
+				</>
+			)}
 			<a href="/">Volver a Ludik Hub <span aria-hidden="true">↗</span></a>
 		</section>
 	</main>

@@ -1,11 +1,48 @@
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
 import type { APIRoute } from 'astro';
-import Stripe from 'stripe';
+import { mercadoPagoRequest } from '../../../lib/mercado-pago';
+
+type MercadoPagoSubscription = {
+	id?: string;
+	reason?: string;
+	external_reference?: string;
+};
+
+type MercadoPagoPayment = {
+	status?: string;
+	currency_id?: string;
+	transaction_amount?: number | string;
+	external_reference?: string;
+	preapproval_id?: string;
+};
+
+type MercadoPagoSearchResponse<T> = {
+	results?: T[];
+	paging?: { total?: number };
+};
 
 const jsonResponse = (data: unknown, status = 200) => new Response(JSON.stringify(data), {
 	status,
 	headers: { 'Content-Type': 'application/json', 'Cache-Control': 'private, no-store' },
 });
+
+async function getAllMercadoPagoResults<T>(path: string) {
+	const limit = 100;
+	const maximumResults = 10_000;
+	const results: T[] = [];
+
+	for (let offset = 0; offset < maximumResults; offset += limit) {
+		const separator = path.includes('?') ? '&' : '?';
+		const page = await mercadoPagoRequest<MercadoPagoSearchResponse<T>>(
+			`${path}${separator}limit=${limit}&offset=${offset}`,
+		);
+		const pageResults = page.results ?? [];
+		results.push(...pageResults);
+		if (!pageResults.length || results.length >= (page.paging?.total ?? 0)) return results;
+	}
+
+	throw new Error('Mercado Pago search exceeded the 10,000-result reporting limit.');
+}
 
 export const GET: APIRoute = async ({ locals }) => {
 	if (!locals.isAdmin) return jsonResponse({ error: 'Acceso denegado.' }, 403);
@@ -13,21 +50,20 @@ export const GET: APIRoute = async ({ locals }) => {
 	const now = new Date();
 	const periodStart = new Date(now);
 	periodStart.setUTCDate(periodStart.getUTCDate() - 28);
-	const since = Math.floor(periodStart.getTime() / 1000);
 	const result: {
 		visitors: number | null;
 		pageViews: number | null;
 		clicks: number | null;
 		donations: number | null;
 		donationCount: number | null;
-		services: { auth: boolean; ga4: boolean; stripe: boolean };
+		services: { auth: boolean; ga4: boolean; mercadoPago: boolean };
 	} = {
 		visitors: null,
 		pageViews: null,
 		clicks: null,
 		donations: null,
 		donationCount: null,
-		services: { auth: true, ga4: false, stripe: false },
+		services: { auth: true, ga4: false, mercadoPago: false },
 	};
 
 	const propertyId = import.meta.env.GA4_PROPERTY_ID;
@@ -60,39 +96,45 @@ export const GET: APIRoute = async ({ locals }) => {
 		}
 	}
 
-	const stripeSecret = import.meta.env.STRIPE_SECRET_KEY;
-	if (stripeSecret) {
+	if (import.meta.env.MERCADO_PAGO_ACCESS_TOKEN) {
 		try {
-			const stripe = new Stripe(stripeSecret);
-			const donationSubscriptionIds = new Set<string>();
-			for await (const subscription of stripe.subscriptions.list({ limit: 100, status: 'all' })) {
-				if (subscription.metadata.donation_type === 'monthly') donationSubscriptionIds.add(subscription.id);
-			}
-
-			let donationTotalCents = 0;
+			const [subscriptions, payments] = await Promise.all([
+				getAllMercadoPagoResults<MercadoPagoSubscription>('/preapproval/search'),
+				getAllMercadoPagoResults<MercadoPagoPayment>(
+					`/v1/payments/search?${new URLSearchParams({
+						begin_date: periodStart.toISOString(),
+						end_date: now.toISOString(),
+						status: 'approved',
+						sort: 'date_created',
+						criteria: 'desc',
+					})}`,
+				),
+			]);
+			const donationSubscriptionIds = new Set(
+				subscriptions
+					.filter((subscription): subscription is MercadoPagoSubscription & { id: string } =>
+						Boolean(
+							subscription.id
+							&& subscription.external_reference?.startsWith('ludik-donation-monthly-')
+							&& subscription.reason?.startsWith('Donativo mensual a Ludik Studios de $'),
+						))
+					.map((subscription) => subscription.id),
+			);
+			let donationTotal = 0;
 			let donationCount = 0;
-			for await (const session of stripe.checkout.sessions.list({
-				limit: 100,
-				status: 'complete',
-				created: { gte: since },
-			})) {
-				if (session.mode !== 'payment' || session.metadata.donation_type !== 'once' || session.payment_status !== 'paid' || session.currency !== 'mxn') continue;
-				donationTotalCents += session.amount_total ?? 0;
+			for (const payment of payments) {
+				const isOneTimeDonation = payment.external_reference?.startsWith('ludik-donation-once-');
+				const isMonthlyDonation = payment.preapproval_id && donationSubscriptionIds.has(payment.preapproval_id);
+				if (payment.status !== 'approved' || payment.currency_id !== 'MXN' || (!isOneTimeDonation && !isMonthlyDonation)) continue;
+				donationTotal += Number(payment.transaction_amount ?? 0);
 				donationCount += 1;
 			}
 
-			for await (const invoice of stripe.invoices.list({ limit: 100, status: 'paid', created: { gte: since } })) {
-				const subscriptionId = typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription?.id;
-				if (!subscriptionId || !donationSubscriptionIds.has(subscriptionId) || invoice.currency !== 'mxn') continue;
-				donationTotalCents += invoice.amount_paid;
-				donationCount += 1;
-			}
-
-			result.donations = donationTotalCents / 100;
+			result.donations = donationTotal;
 			result.donationCount = donationCount;
-			result.services.stripe = true;
+			result.services.mercadoPago = true;
 		} catch (error) {
-			console.error('Stripe admin report failed:', error);
+			console.error('Mercado Pago admin report failed:', error);
 		}
 	}
 
