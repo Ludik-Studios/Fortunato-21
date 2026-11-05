@@ -106,11 +106,13 @@ const emptySlotsCount = 3;
 						<!-- CONTENEDOR DINÁMICO DEL JUEGO -->
 						<div class="game-interface" id="game-interface">
 							<!-- PORTADA DE INICIO (Se muestra por defecto hasta hacer clic) -->
+							<!-- CONTENEDOR DEL IFRAME DE UNITY (Oculto hasta que cargue) -->
+							<div class="game-player-wrapper hidden" id="game-player-wrapper"></div>
 							<div class="game-poster" id="game-poster">
 								<div class="poster-content">
 									<span class="poster-icon" id="poster-icon">♦</span>
 									<h3 id="poster-title">Fortunato 21</h3>
-									<p>Haz clic para cargar el juego en el navegador</p>
+									<p id="poster-subtitle">Haz clic para cargar el juego en el navegador</p>
 									<button class="btn-play-trigger" type="button" id="btn-start-game">
 										<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
 											<path d="M8 5v14l11-7z"/>
@@ -189,11 +191,11 @@ const emptySlotsCount = 3;
 </Layout>
 
 <script define:vars={{ initialGames: games }}>
-	const gameInterface = document.getElementById('game-interface');
-	const heroTitle = document.getElementById('hero-title');
-	const heroGenre = document.getElementById('hero-genre');
-	const heroDescription = document.getElementById('hero-description');
-	const heroDetailBtn = document.getElementById('hero-detail-btn');
+	const gamePoster = document.getElementById('game-poster');
+	const gamePlayerWrapper = document.getElementById('game-player-wrapper');
+	const posterIcon = document.getElementById('poster-icon');
+	const posterTitle = document.getElementById('poster-title');
+	const startBtn = document.getElementById('btn-start-game');
 	const heroPlayBtn = document.getElementById('hero-play-btn');
 	const fullscreenBtn = document.querySelector('[data-game-fullscreen]');
 	const fullscreenLabel = document.querySelector('[data-game-fullscreen-label]');
@@ -201,65 +203,68 @@ const emptySlotsCount = 3;
 	const gameFrame = document.querySelector('.game-frame');
 	const fallbackClass = 'game-frame--fullscreen-fallback';
 
+	const heroTitle = document.getElementById('hero-title');
+	const heroGenre = document.getElementById('hero-genre');
+	const heroDescription = document.getElementById('hero-description');
+	const heroDetailBtn = document.getElementById('hero-detail-btn');
+
 	let currentGame = initialGames[0];
 	let gameLoaded = false;
 
-	function renderIframe(url, title) {
-		if (!gameInterface) return;
-		gameInterface.innerHTML = `
+	function loadCurrentGame() {
+		if (!gamePlayerWrapper || !gamePoster) return;
+
+		gamePlayerWrapper.innerHTML = `
 			<iframe
 				class="unity-player"
-				src="${url}"
-				title="${title}"
+				src="${currentGame.gameUrl}"
+				title="${currentGame.title}"
 				allow="autoplay; fullscreen; gamepad"
 				allowfullscreen
 				style="width: 100%; height: 100%; border: 0; display: block;"
 			></iframe>
 		`;
+
+		gamePoster.classList.add('hidden');
+		gamePlayerWrapper.classList.remove('hidden');
 		gameLoaded = true;
+
 		if (fullscreenBtn) {
 			fullscreenBtn.classList.remove('hidden');
 		}
+
+		document.getElementById('games')?.scrollIntoView({ behavior: 'smooth' });
 	}
 
-	function renderPoster() {
-		if (!gameInterface) return;
-		gameInterface.innerHTML = `
-			<div class="game-poster" id="game-poster">
-				<div class="poster-content">
-					<span class="poster-icon" id="poster-icon">${currentGame.thumbnail}</span>
-					<h3 id="poster-title">${currentGame.title}</h3>
-					<p id="poster-subtitle">Haz clic para cargar el juego en el navegador</p>
-					<button class="btn-play-trigger" type="button" id="btn-start-game">
-						<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-							<path d="M8 5v14l11-7z"/>
-						</svg>
-						Cargar Juego
-					</button>
-				</div>
-			</div>
-		`;
+	function resetToPoster(game) {
+		if (!gamePoster || !gamePlayerWrapper) return;
+
+		// Si habÃ­a un juego corriendo, vaciamos el iframe para liberar recursos y audio
+		gamePlayerWrapper.innerHTML = '';
+		gamePlayerWrapper.classList.add('hidden');
+
+		// Actualizamos los datos del poster manteniendo el mismo botÃ³n estilizado intacto
+		if (posterIcon) posterIcon.textContent = game.thumbnail;
+		if (posterTitle) posterTitle.textContent = game.title;
+
+		gamePoster.classList.remove('hidden');
 		gameLoaded = false;
+
 		if (fullscreenBtn) {
 			fullscreenBtn.classList.add('hidden');
 		}
-		document.getElementById('btn-start-game')?.addEventListener('click', loadCurrentGame);
-	}
-
-	function loadCurrentGame() {
-		if (!gameInterface) return;
-		renderIframe(currentGame.gameUrl, currentGame.title);
-		document.getElementById('games')?.scrollIntoView({ behavior: 'smooth' });
 	}
 
 	function selectGame(game) {
 		currentGame = game;
 
+		// Actualizar informaciÃ³n del Hero
 		if (heroTitle) heroTitle.textContent = game.title;
 		if (heroGenre) heroGenre.innerHTML = `GÉNERO: <b>${game.genre.toUpperCase()}</b>`;
 		if (heroDescription) heroDescription.textContent = game.description;
 		if (heroDetailBtn) heroDetailBtn.setAttribute('href', game.detailUrl);
 
+		// Actualizar tarjeta activa en el carrusel
 		document.querySelectorAll('.game-card[data-game-id]').forEach((card) => {
 			if (card.getAttribute('data-game-id') === game.id) {
 				card.classList.add('active');
@@ -268,14 +273,11 @@ const emptySlotsCount = 3;
 			}
 		});
 
-		if (gameLoaded) {
-			renderIframe(game.gameUrl, game.title);
-		} else {
-			renderPoster();
-		}
+		// Mostrar la portada con el botÃ³n "Cargar Juego" para el juego seleccionado
+		resetToPoster(game);
 	}
 
-	document.getElementById('btn-start-game')?.addEventListener('click', loadCurrentGame);
+	startBtn?.addEventListener('click', loadCurrentGame);
 	heroPlayBtn?.addEventListener('click', loadCurrentGame);
 
 	document.querySelectorAll('.game-card[data-game-id]').forEach((card) => {
@@ -294,7 +296,7 @@ const emptySlotsCount = 3;
 		});
 	});
 
-		// Lógica de pantalla completa
+	// LÃ³gica de pantalla completa
 	if (
 		gameFrame instanceof HTMLElement &&
 		fullscreenBtn instanceof HTMLButtonElement &&
@@ -553,6 +555,18 @@ const emptySlotsCount = 3;
 		box-shadow: 0 16px 40px rgba(0,0,0,0.7);
 	}
 	.game-interface { position: absolute; inset: 0; }
+	.game-player-wrapper {
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		inset: 0;
+	}
+	.game-player-wrapper.hidden,
+	.game-poster.hidden {
+		display: none !important;
+	}
+	.game-player-wrapper :global(.unity-player),
+	.game-player-wrapper :global(iframe),
 	.game-interface :global(.unity-player),
 	.game-interface :global(iframe),
 	.unity-player {
@@ -563,9 +577,12 @@ const emptySlotsCount = 3;
 	}
 
 	/* PORTADA DE INICIO DEL JUEGO */
-	.game-poster {
+	.game-poster,
+	.game-interface :global(.game-poster) {
 		width: 100%;
 		height: 100%;
+		position: absolute;
+		inset: 0;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -573,30 +590,36 @@ const emptySlotsCount = 3;
 		text-align: center;
 		padding: 20px;
 	}
-	.poster-content {
+	.poster-content,
+	.game-interface :global(.poster-content) {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		justify-content: center;
 		gap: 12px;
 	}
-	.poster-icon {
+	.poster-icon,
+	.game-interface :global(.poster-icon) {
 		font-size: 54px;
 		color: #d94c60;
 		text-shadow: 0 0 24px rgba(217, 76, 96, 0.6);
 	}
-	.poster-content h3 {
+	.poster-content h3,
+	.game-interface :global(.poster-content h3) {
 		margin: 0;
 		font-family: Impact, 'Arial Black', sans-serif;
 		font-size: 28px;
 		color: #fff;
 		letter-spacing: 1px;
 	}
-	.poster-content p {
+	.poster-content p,
+	.game-interface :global(.poster-content p) {
 		margin: 0 0 8px;
 		font-size: 13px;
 		color: rgba(255, 255, 255, 0.7);
 	}
-	.btn-play-trigger {
+	.btn-play-trigger,
+	.game-interface :global(.btn-play-trigger) {
 		padding: 12px 24px;
 		border: none;
 		border-radius: 6px;
@@ -612,7 +635,8 @@ const emptySlotsCount = 3;
 		box-shadow: 0 6px 20px rgba(255, 203, 118, 0.35);
 		transition: transform 0.2s ease, background 0.2s ease;
 	}
-	.btn-play-trigger:hover {
+	.btn-play-trigger:hover,
+	.game-interface :global(.btn-play-trigger:hover) {
 		transform: scale(1.05);
 		background: #ffe0a3;
 	}
