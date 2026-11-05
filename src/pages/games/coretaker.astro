@@ -1,0 +1,446 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const adsenseClientId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID;
+const adsenseEnabled = import.meta.env.PROD && adsenseClientId;
+const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
+---
+
+<Layout title="Coretaker | Detalle del Juego | Ludik Hub" description="Conoce todo sobre Coretaker, el juego de acción y supervivencia táctica desarrollado por Ludik Studios." lang="es" adsenseClientId={adsenseEnabled ? adsenseClientId : undefined} gaMeasurementId={gaMeasurementId}>
+	<main class="game-detail-shell">
+		<!-- BOTÓN REGRESAR -->
+		<div class="nav-back">
+			<a href="/" class="btn-back">
+				<span aria-hidden="true">←</span> Volver al Hub
+			</a>
+		</div>
+
+		<!-- ENCABEZADO DEL JUEGO -->
+		<header class="detail-header">
+			<div class="header-badge">DETALLES DEL PROYECTO</div>
+			<h1>CORE<em>TAKER</em></h1>
+			<p class="tagline">Defensa táctica, reflejos y supervivencia en el espacio profundo.</p>
+		</header>
+
+		<!-- CONTENIDO PRINCIPAL -->
+		<section class="detail-content">
+			<article class="main-info">
+				<h2>Sobre el juego</h2>
+				<p>
+					<strong>Coretaker</strong> es una intensa experiencia de acción y defensa estratégica desarrollada por Ludik Studios. Tu misión es salvaguardar el núcleo energético de la estación espacial frente a continuas amenazas y anomalías cósmicas, adaptando tu táctica en cada segundo de la batalla.
+				</p>
+
+				<h3>Características clave</h3>
+				<ul>
+					<li><strong>Defensa de núcleo en tiempo real:</strong> Protege el generador central administrando recursos y posicionamiento.</li>
+					<li><strong>Acción rápida y reflejos:</strong> Enfrenta patrones de ataque dinámicos que pondrán a prueba tu agilidad mental.</li>
+					<li><strong>Progresión y desafío constante:</strong> Cada oleada incrementa la dificultad exigiendo mayor precisión.</li>
+					<li><strong>Construido en Unity WebGL:</strong> Disfruta de una experiencia fluida sin descargas adicionales directamente desde el navegador.</li>
+				</ul>
+
+				<!-- MULTIMEDIA: VIDEOS E IMÁGENES -->
+				<section class="game-media-section">
+					<h3>Multimedia</h3>
+					<p class="media-intro">Trailers, demostraciones de gameplay y capturas de pantalla de Coretaker.</p>
+
+					<!-- VIDEO / TRAILER -->
+					<div class="media-block">
+						<h4>Video / Trailer</h4>
+						<div class="media-slot media-slot--video">
+							<div class="media-placeholder">
+								<svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor">
+									<path d="M8 5v14l11-7z"/>
+								</svg>
+								<strong>Trailer o Video de Gameplay</strong>
+								<span>Espacio reservado para video (YouTube, Vimeo o archivo .mp4)</span>
+							</div>
+						</div>
+					</div>
+
+					<!-- CAPTURAS DE PANTALLA -->
+					<div class="media-block">
+						<h4>Capturas de Pantalla</h4>
+						<div class="media-grid">
+							<div class="media-slot media-slot--image">
+								<div class="media-placeholder">
+									<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8">
+										<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+										<circle cx="8.5" cy="8.5" r="1.5"/>
+										<polyline points="21 15 16 10 5 21"/>
+									</svg>
+									<strong>Captura 1</strong>
+									<span>Espacio reservado para imagen</span>
+								</div>
+							</div>
+
+							<div class="media-slot media-slot--image">
+								<div class="media-placeholder">
+									<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8">
+										<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+										<circle cx="8.5" cy="8.5" r="1.5"/>
+										<polyline points="21 15 16 10 5 21"/>
+									</svg>
+									<strong>Captura 2</strong>
+									<span>Espacio reservado para imagen</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<div class="play-cta">
+					<a href="/#home" class="btn-play-now">
+						<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+						IR AL HUB Y JUGAR
+					</a>
+				</div>
+			</article>
+
+			<!-- FICHA TÉCNICA -->
+			<aside class="sidebar-info">
+				<div class="info-card">
+					<h3>Ficha Técnica</h3>
+					<dl class="tech-specs">
+						<div>
+							<dt>Desarrollador</dt>
+							<dd>Ludik Studios</dd>
+						</div>
+						<div>
+							<dt>Género</dt>
+							<dd>Acción / Supervivencia</dd>
+						</div>
+						<div>
+							<dt>Motor</dt>
+							<dd>Unity WebGL</dd>
+						</div>
+						<div>
+							<dt>Estado</dt>
+							<dd class="status-active">Disponible</dd>
+						</div>
+						<div>
+							<dt>Plataformas</dt>
+							<dd>Web (PC & Mobile)</dd>
+						</div>
+					</dl>
+				</div>
+
+				<!-- EQUIPO Y CONTACTO -->
+				<div class="info-card">
+					<h3>Equipo del Proyecto</h3>
+					<ul class="team-list">
+						<li class="team-member">
+							<span class="member-role">Dirección & Game Design</span>
+							<strong class="member-name">Alex Mercer</strong>
+							<a href="mailto:alex.mercer@ludikstudios.com" class="member-contact">alex.mercer@ludikstudios.com</a>
+						</li>
+						<li class="team-member">
+							<span class="member-role">Programación & Unity</span>
+							<strong class="member-name">Valeria Ramos</strong>
+							<a href="mailto:valeria.ramos@ludikstudios.com" class="member-contact">valeria.ramos@ludikstudios.com</a>
+						</li>
+						<li class="team-member">
+							<span class="member-role">Arte & Animación 3D</span>
+							<strong class="member-name">Diego Torres</strong>
+							<a href="mailto:diego.torres@ludikstudios.com" class="member-contact">diego.torres@ludikstudios.com</a>
+						</li>
+						<li class="team-member">
+							<span class="member-role">Audio & Música</span>
+							<strong class="member-name">Elena Castillo</strong>
+							<a href="mailto:elena.castillo@ludikstudios.com" class="member-contact">elena.castillo@ludikstudios.com</a>
+						</li>
+					</ul>
+				</div>
+			</aside>
+		</section>
+	</main>
+</Layout>
+
+<style>
+	:global(*) { box-sizing: border-box; }
+	:global(body) {
+		min-width: 320px;
+		min-height: 100vh;
+		color: #fff;
+		background-color: #050b14;
+		background-image:
+			radial-gradient(ellipse at 50% 0%, rgba(26, 54, 110, 0.45), transparent 70%),
+			linear-gradient(180deg, #050b14 0%, #091325 100%);
+		font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+	}
+
+	.game-detail-shell {
+		width: min(1100px, 100%);
+		margin: 0 auto;
+		padding: 32px 24px 64px;
+		display: flex;
+		flex-direction: column;
+		gap: 32px;
+	}
+
+	.btn-back {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		color: #ffcb76;
+		text-decoration: none;
+		font-weight: 700;
+		font-size: 14px;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		transition: opacity 0.2s ease;
+	}
+	.btn-back:hover { opacity: 0.8; }
+
+	.detail-header {
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		padding-bottom: 24px;
+	}
+	.header-badge {
+		font-size: 10px;
+		font-weight: 900;
+		color: #ffcb76;
+		letter-spacing: 2px;
+		margin-bottom: 8px;
+	}
+	.detail-header h1 {
+		margin: 0;
+		font-family: Impact, 'Arial Black', sans-serif;
+		font-size: clamp(40px, 6vw, 64px);
+		letter-spacing: 1px;
+		line-height: 1;
+	}
+	.detail-header h1 em { color: #ffcb76; font-style: normal; }
+	.tagline {
+		margin: 12px 0 0;
+		font-size: 16px;
+		color: rgba(255, 255, 255, 0.7);
+	}
+
+	.detail-content {
+		display: grid;
+		grid-template-columns: 1fr 320px;
+		gap: 36px;
+	}
+
+	.main-info h2, .main-info h3 {
+		font-family: Impact, 'Arial Black', sans-serif;
+		letter-spacing: 0.5px;
+		color: #fff;
+	}
+	.main-info p {
+		font-size: 15px;
+		line-height: 1.7;
+		color: rgba(255, 255, 255, 0.85);
+	}
+	.main-info ul {
+		padding-left: 20px;
+		margin: 16px 0 32px;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	.main-info li {
+		font-size: 14px;
+		line-height: 1.6;
+		color: rgba(255, 255, 255, 0.8);
+	}
+	.main-info li strong { color: #ffcb76; }
+
+	/* SECCIÓN MULTIMEDIA (VIDEOS E IMÁGENES) */
+	.game-media-section {
+		margin: 28px 0 36px;
+		display: flex;
+		flex-direction: column;
+		gap: 22px;
+	}
+	.game-media-section h3 {
+		margin: 0;
+	}
+	.media-intro {
+		margin: 0 !important;
+		font-size: 14px;
+		color: rgba(255, 255, 255, 0.7) !important;
+	}
+	.media-block {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	.media-block h4 {
+		margin: 0;
+		font-size: 11px;
+		font-weight: 700;
+		color: #ffcb76;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+	}
+	.media-slot {
+		position: relative;
+		border-radius: 8px;
+		overflow: hidden;
+		background: rgba(14, 27, 52, 0.5);
+		border: 1px dashed rgba(255, 255, 255, 0.2);
+		transition: border-color 0.2s ease, background 0.2s ease;
+	}
+	.media-slot:hover {
+		border-color: rgba(255, 203, 118, 0.4);
+		background: rgba(14, 27, 52, 0.7);
+	}
+	.media-slot--video {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+	}
+	.media-slot--image {
+		aspect-ratio: 16 / 9;
+	}
+	.media-slot :global(img),
+	.media-slot :global(video),
+	.media-slot :global(iframe) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+		border: 0;
+	}
+	.media-placeholder {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		text-align: center;
+		padding: 24px;
+		color: rgba(255, 255, 255, 0.5);
+	}
+	.media-placeholder svg {
+		color: #ffcb76;
+		opacity: 0.85;
+	}
+	.media-placeholder strong {
+		font-size: 14px;
+		color: rgba(255, 255, 255, 0.9);
+	}
+	.media-placeholder span {
+		font-size: 12px;
+		color: rgba(255, 255, 255, 0.5);
+	}
+	.media-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 16px;
+	}
+	@media (max-width: 600px) {
+		.media-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.btn-play-now {
+		padding: 14px 28px;
+		border-radius: 6px;
+		background: linear-gradient(135deg, #ffcb76 0%, #e5a438 100%);
+		color: #071325;
+		font-family: 'Arial Black', Impact, sans-serif;
+		font-size: 14px;
+		letter-spacing: 1px;
+		text-decoration: none;
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		box-shadow: 0 8px 24px rgba(255, 203, 118, 0.3);
+		transition: transform 0.2s ease;
+	}
+	.btn-play-now:hover { transform: translateY(-2px); }
+
+	.sidebar-info {
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+	}
+
+	.sidebar-info .info-card {
+		padding: 24px;
+		border-radius: 8px;
+		background: rgba(14, 27, 52, 0.6);
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		backdrop-filter: blur(8px);
+	}
+	.info-card h3 {
+		margin: 0 0 16px;
+		font-family: Impact, 'Arial Black', sans-serif;
+		font-size: 18px;
+		letter-spacing: 1px;
+		color: #ffcb76;
+	}
+	.tech-specs {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		margin: 0;
+	}
+	.tech-specs dt {
+		font-size: 11px;
+		font-weight: 700;
+		color: rgba(255, 255, 255, 0.5);
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+	.tech-specs dd {
+		margin: 2px 0 0;
+		font-size: 14px;
+		font-weight: 700;
+		color: #fff;
+	}
+	.status-active { color: #ffcb76 !important; }
+
+	.team-list {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.team-member {
+		display: flex;
+		flex-direction: column;
+		gap: 3px;
+		padding-bottom: 12px;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	}
+	.team-member:last-child {
+		padding-bottom: 0;
+		border-bottom: none;
+	}
+	.member-role {
+		font-size: 11px;
+		font-weight: 700;
+		color: rgba(255, 255, 255, 0.5);
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+	.member-name {
+		font-size: 14px;
+		font-weight: 700;
+		color: #fff;
+	}
+	.member-contact {
+		font-size: 12px;
+		color: #ffcb76;
+		text-decoration: none;
+		word-break: break-all;
+		transition: opacity 0.2s ease;
+	}
+	.member-contact:hover {
+		text-decoration: underline;
+		opacity: 0.85;
+	}
+
+	@media (max-width: 768px) {
+		.detail-content {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

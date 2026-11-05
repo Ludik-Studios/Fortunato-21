@@ -17,15 +17,28 @@ const games = [
 		platform: 'UNITY WEBGL',
 		status: 'DISPONIBLE',
 		description: 'Te damos la bienvenida a Ludik Hub. Fortunato 21 es nuestro juego de cartas inspirado en el espacio, creado por Ludik Studios.',
-		gameUrl: '/game/build/index.html',
+		gameUrl: '/game/build/21-fortunato/index.html',
 		detailUrl: '/games/fortunato-21',
 		thumbnail: '♦',
 		active: true
+	},
+	{
+		id: 'coretaker',
+		title: 'Coretaker',
+		subtitle: 'Acción y supervivencia táctica',
+		genre: 'Acción / Supervivencia',
+		platform: 'UNITY WEBGL',
+		status: 'DISPONIBLE',
+		description: 'Protege el núcleo energético y sobrevive a los desafíos espaciales en Coretaker, la nueva experiencia de acción desarrollada en Unity WebGL por Ludik Studios.',
+		gameUrl: '/game/build/coretaker/index.html',
+		detailUrl: '/games/coretaker',
+		thumbnail: '⚡',
+		active: false
 	}
 ];
 
 // Slots vacíos para el carrusel
-const emptySlotsCount = 4;
+const emptySlotsCount = 3;
 ---
 
 <Layout title="Ludik Hub | Ludik Studios" description="Descubre y juega los títulos independientes de Ludik Studios." lang="es" adsenseClientId={adsenseEnabled ? adsenseClientId : undefined} gaMeasurementId={gaMeasurementId}>
@@ -41,7 +54,7 @@ const emptySlotsCount = 4;
 				<span>LUDIK <b>HUB</b></span>
 			</a>
 			<nav aria-label="Navegación principal">
-				<a href="#catalogo" data-ga-event="games_nav">Catálogo</a>
+				<a href="/catalog/" data-ga-event="games_nav">Catálogo</a>
 				<a href="/donate/" data-ga-event="donate_nav">Apóyanos</a>
 				{currentUser ? (
 					<>
@@ -68,9 +81,9 @@ const emptySlotsCount = 4;
 						<span class="pulse-dot"></span>
 						<span>DESTACADO DE LUDIK</span>
 					</div>
-					<h1 class="game-title">Fortunato <em>21</em></h1>
-					<p class="game-genre">GÉNERO: <b>JUEGO DE CARTAS / ESPACIAL</b></p>
-					<p class="game-description">
+					<h1 class="game-title" id="hero-title">Fortunato <em>21</em></h1>
+					<p class="game-genre" id="hero-genre">GÉNERO: <b>JUEGO DE CARTAS / ESPACIAL</b></p>
+					<p class="game-description" id="hero-description">
 						Desafía la suerte en el espacio. Un juego táctico de 21 cartas con mecánicas únicas de tienda y potenciadores desarrollado en Unity WebGL.
 					</p>
 					
@@ -80,7 +93,7 @@ const emptySlotsCount = 4;
 							JUGAR AHORA
 						</button>
 						<!-- ENLACE A LA PÁGINA DE DESCRIPCIÓN DEL JUEGO -->
-						<a href="/games/fortunato-21" class="btn-secondary" data-ga-event="game_details">
+						<a href="/games/fortunato-21" class="btn-secondary" id="hero-detail-btn" data-ga-event="game_details">
 							VER DETALLES
 						</a>
 					</div>
@@ -95,8 +108,8 @@ const emptySlotsCount = 4;
 							<!-- PORTADA DE INICIO (Se muestra por defecto hasta hacer clic) -->
 							<div class="game-poster" id="game-poster">
 								<div class="poster-content">
-									<span class="poster-icon">♦</span>
-									<h3>Fortunato 21</h3>
+									<span class="poster-icon" id="poster-icon">♦</span>
+									<h3 id="poster-title">Fortunato 21</h3>
 									<p>Haz clic para cargar el juego en el navegador</p>
 									<button class="btn-play-trigger" type="button" id="btn-start-game">
 										<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
@@ -132,7 +145,7 @@ const emptySlotsCount = 4;
 				<div class="carousel-track">
 					<!-- JUEGO ACTUAL (FORTUNATO 21) -->
 					{games.map((game) => (
-						<article class="game-card active" data-game-id={game.id}>
+						<article class={`game-card ${game.active ? 'active' : ''}`} data-game-id={game.id} role="button" tabindex="0">
 							<div class="card-media">
 								<div class="card-icon">{game.thumbnail}</div>
 								<span class="card-badge">{game.status}</span>
@@ -175,9 +188,12 @@ const emptySlotsCount = 4;
 	</main>
 </Layout>
 
-<script>
+<script define:vars={{ initialGames: games }}>
 	const gameInterface = document.getElementById('game-interface');
-	const startBtn = document.getElementById('btn-start-game');
+	const heroTitle = document.getElementById('hero-title');
+	const heroGenre = document.getElementById('hero-genre');
+	const heroDescription = document.getElementById('hero-description');
+	const heroDetailBtn = document.getElementById('hero-detail-btn');
 	const heroPlayBtn = document.getElementById('hero-play-btn');
 	const fullscreenBtn = document.querySelector('[data-game-fullscreen]');
 	const fullscreenLabel = document.querySelector('[data-game-fullscreen-label]');
@@ -185,39 +201,100 @@ const emptySlotsCount = 4;
 	const gameFrame = document.querySelector('.game-frame');
 	const fallbackClass = 'game-frame--fullscreen-fallback';
 
+	let currentGame = initialGames[0];
 	let gameLoaded = false;
 
-	function loadUnityGame() {
-		if (gameLoaded || !gameInterface) return;
-
-		// Reemplazar portada por el iframe dinámico de Unity
+	function renderIframe(url, title) {
+		if (!gameInterface) return;
 		gameInterface.innerHTML = `
 			<iframe
 				class="unity-player"
-				src="/game/build/index.html"
-				title="21 Fortunato"
+				src="${url}"
+				title="${title}"
 				allow="autoplay; fullscreen; gamepad"
 				allowfullscreen
 				style="width: 100%; height: 100%; border: 0; display: block;"
 			></iframe>
 		`;
-
 		gameLoaded = true;
-
-		// Mostrar el botón de pantalla completa
 		if (fullscreenBtn) {
 			fullscreenBtn.classList.remove('hidden');
 		}
+	}
 
-		// Desplazar suavemente hasta el marco del juego
+	function renderPoster() {
+		if (!gameInterface) return;
+		gameInterface.innerHTML = `
+			<div class="game-poster" id="game-poster">
+				<div class="poster-content">
+					<span class="poster-icon" id="poster-icon">${currentGame.thumbnail}</span>
+					<h3 id="poster-title">${currentGame.title}</h3>
+					<p id="poster-subtitle">Haz clic para cargar el juego en el navegador</p>
+					<button class="btn-play-trigger" type="button" id="btn-start-game">
+						<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+							<path d="M8 5v14l11-7z"/>
+						</svg>
+						Cargar Juego
+					</button>
+				</div>
+			</div>
+		`;
+		gameLoaded = false;
+		if (fullscreenBtn) {
+			fullscreenBtn.classList.add('hidden');
+		}
+		document.getElementById('btn-start-game')?.addEventListener('click', loadCurrentGame);
+	}
+
+	function loadCurrentGame() {
+		if (!gameInterface) return;
+		renderIframe(currentGame.gameUrl, currentGame.title);
 		document.getElementById('games')?.scrollIntoView({ behavior: 'smooth' });
 	}
 
-	// Escuchar clics para cargar el juego
-	startBtn?.addEventListener('click', loadUnityGame);
-	heroPlayBtn?.addEventListener('click', loadUnityGame);
+	function selectGame(game) {
+		currentGame = game;
 
-	// Lógica de pantalla completa
+		if (heroTitle) heroTitle.textContent = game.title;
+		if (heroGenre) heroGenre.innerHTML = `GÉNERO: <b>${game.genre.toUpperCase()}</b>`;
+		if (heroDescription) heroDescription.textContent = game.description;
+		if (heroDetailBtn) heroDetailBtn.setAttribute('href', game.detailUrl);
+
+		document.querySelectorAll('.game-card[data-game-id]').forEach((card) => {
+			if (card.getAttribute('data-game-id') === game.id) {
+				card.classList.add('active');
+			} else {
+				card.classList.remove('active');
+			}
+		});
+
+		if (gameLoaded) {
+			renderIframe(game.gameUrl, game.title);
+		} else {
+			renderPoster();
+		}
+	}
+
+	document.getElementById('btn-start-game')?.addEventListener('click', loadCurrentGame);
+	heroPlayBtn?.addEventListener('click', loadCurrentGame);
+
+	document.querySelectorAll('.game-card[data-game-id]').forEach((card) => {
+		card.addEventListener('click', () => {
+			const id = card.getAttribute('data-game-id');
+			const selected = initialGames.find((g) => g.id === id);
+			if (selected) selectGame(selected);
+		});
+		card.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter' || e.key === ' ') {
+				e.preventDefault();
+				const id = card.getAttribute('data-game-id');
+				const selected = initialGames.find((g) => g.id === id);
+				if (selected) selectGame(selected);
+			}
+		});
+	});
+
+		// Lógica de pantalla completa
 	if (
 		gameFrame instanceof HTMLElement &&
 		fullscreenBtn instanceof HTMLButtonElement &&

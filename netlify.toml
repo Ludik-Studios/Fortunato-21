@@ -1,4 +1,20 @@
 [[headers]]
+  for = "/game/build/21-fortunato/Build/*.br"
+  [headers.values]
+    Content-Encoding = "br"
+
+[[headers]]
+  for = "/game/build/21-fortunato/Build/*.wasm.br"
+  [headers.values]
+    Content-Encoding = "br"
+    Content-Type = "application/wasm"
+
+[[headers]]
+  for = "/game/build/coretaker/Build/*.wasm"
+  [headers.values]
+    Content-Type = "application/wasm"
+
+[[headers]]
   for = "/game/build/Build/*.br"
   [headers.values]
     Content-Encoding = "br"
@@ -7,4 +23,4 @@
   for = "/game/build/Build/*.wasm.br"
   [headers.values]
     Content-Encoding = "br"
-    Content-Type = "application/wasm"    
+    Content-Type = "application/wasm"

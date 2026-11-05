@@ -38,6 +38,59 @@ const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
 					<li><strong>Construido en Unity WebGL:</strong> Ejecución fluida directamente en tu navegador sin descargas.</li>
 				</ul>
 
+				<!-- MULTIMEDIA: VIDEOS E IMÁGENES -->
+				<section class="game-media-section">
+					<h3>Multimedia</h3>
+					<p class="media-intro">Trailers, demostraciones de gameplay y capturas de pantalla de Fortunato 21.</p>
+
+					<!-- VIDEO / TRAILER -->
+					<div class="media-block">
+						<h4>Video / Trailer</h4>
+						<div class="media-slot media-slot--video">
+							<!-- Cuando tengas el video listo, puedes reemplazar este placeholder por un <iframe src="..."> o <video src="..."> -->
+							<div class="media-placeholder">
+								<svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor">
+									<path d="M8 5v14l11-7z"/>
+								</svg>
+								<strong>Trailer o Video de Gameplay</strong>
+								<span>Espacio reservado para video (YouTube, Vimeo o archivo .mp4)</span>
+							</div>
+						</div>
+					</div>
+
+					<!-- CAPTURAS DE PANTALLA -->
+					<div class="media-block">
+						<h4>Capturas de Pantalla</h4>
+						<div class="media-grid">
+							<!-- Espacio para Imagen 1: reemplazar el contenido por <img src="/tu-ruta/img1.jpg" alt="Captura 1" /> -->
+							<div class="media-slot media-slot--image">
+								<div class="media-placeholder">
+									<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8">
+										<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+										<circle cx="8.5" cy="8.5" r="1.5"/>
+										<polyline points="21 15 16 10 5 21"/>
+									</svg>
+									<strong>Captura 1</strong>
+									<span>Espacio reservado para imagen</span>
+								</div>
+							</div>
+
+							<!-- Espacio para Imagen 2: reemplazar el contenido por <img src="/tu-ruta/img2.jpg" alt="Captura 2" /> -->
+							<div class="media-slot media-slot--image">
+								<div class="media-placeholder">
+									<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8">
+										<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+										<circle cx="8.5" cy="8.5" r="1.5"/>
+										<polyline points="21 15 16 10 5 21"/>
+									</svg>
+									<strong>Captura 2</strong>
+									<span>Espacio reservado para imagen</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+
 				<div class="play-cta">
 					<a href="/#home" class="btn-play-now">
 						<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
@@ -72,6 +125,32 @@ const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
 							<dd>Web (PC & Mobile)</dd>
 						</div>
 					</dl>
+				</div>
+				<!-- EQUIPO Y CONTACTO -->
+				<div class="info-card">
+					<h3>Equipo del Proyecto</h3>
+					<ul class="team-list">
+						<li class="team-member">
+							<span class="member-role">Dirección & Game Design</span>
+							<strong class="member-name">Alex Mercer</strong>
+							<a href="mailto:alex.mercer@ludikstudios.com" class="member-contact">alex.mercer@ludikstudios.com</a>
+						</li>
+						<li class="team-member">
+							<span class="member-role">Programación & Unity</span>
+							<strong class="member-name">Valeria Ramos</strong>
+							<a href="mailto:valeria.ramos@ludikstudios.com" class="member-contact">valeria.ramos@ludikstudios.com</a>
+						</li>
+						<li class="team-member">
+							<span class="member-role">Arte & Animación 3D</span>
+							<strong class="member-name">Diego Torres</strong>
+							<a href="mailto:diego.torres@ludikstudios.com" class="member-contact">diego.torres@ludikstudios.com</a>
+						</li>
+						<li class="team-member">
+							<span class="member-role">Audio & Música</span>
+							<strong class="member-name">Elena Castillo</strong>
+							<a href="mailto:elena.castillo@ludikstudios.com" class="member-contact">elena.castillo@ludikstudios.com</a>
+						</li>
+					</ul>
 				</div>
 			</aside>
 		</section>
@@ -169,6 +248,97 @@ const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
 	}
 	.main-info li strong { color: #ffcb76; }
 
+	/* SECCIÓN MULTIMEDIA (VIDEOS E IMÁGENES) */
+	.game-media-section {
+		margin: 28px 0 36px;
+		display: flex;
+		flex-direction: column;
+		gap: 22px;
+	}
+	.game-media-section h3 {
+		margin: 0;
+	}
+	.media-intro {
+		margin: 0 !important;
+		font-size: 14px;
+		color: rgba(255, 255, 255, 0.7) !important;
+	}
+	.media-block {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	.media-block h4 {
+		margin: 0;
+		font-size: 11px;
+		font-weight: 700;
+		color: #ffcb76;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+	}
+	.media-slot {
+		position: relative;
+		border-radius: 8px;
+		overflow: hidden;
+		background: rgba(14, 27, 52, 0.5);
+		border: 1px dashed rgba(255, 255, 255, 0.2);
+		transition: border-color 0.2s ease, background 0.2s ease;
+	}
+	.media-slot:hover {
+		border-color: rgba(255, 203, 118, 0.4);
+		background: rgba(14, 27, 52, 0.7);
+	}
+	.media-slot--video {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+	}
+	.media-slot--image {
+		aspect-ratio: 16 / 9;
+	}
+	.media-slot :global(img),
+	.media-slot :global(video),
+	.media-slot :global(iframe) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+		border: 0;
+	}
+	.media-placeholder {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		text-align: center;
+		padding: 24px;
+		color: rgba(255, 255, 255, 0.5);
+	}
+	.media-placeholder svg {
+		color: #ffcb76;
+		opacity: 0.85;
+	}
+	.media-placeholder strong {
+		font-size: 14px;
+		color: rgba(255, 255, 255, 0.9);
+	}
+	.media-placeholder span {
+		font-size: 12px;
+		color: rgba(255, 255, 255, 0.5);
+	}
+	.media-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 16px;
+	}
+	@media (max-width: 600px) {
+		.media-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
 	.btn-play-now {
 		padding: 14px 28px;
 		border-radius: 6px;
@@ -185,6 +355,12 @@ const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
 		transition: transform 0.2s ease;
 	}
 	.btn-play-now:hover { transform: translateY(-2px); }
+
+	.sidebar-info {
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+	}
 
 	.sidebar-info .info-card {
 		padding: 24px;
@@ -220,6 +396,49 @@ const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
 		color: #fff;
 	}
 	.status-active { color: #ffcb76 !important; }
+
+	.team-list {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.team-member {
+		display: flex;
+		flex-direction: column;
+		gap: 3px;
+		padding-bottom: 12px;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	}
+	.team-member:last-child {
+		padding-bottom: 0;
+		border-bottom: none;
+	}
+	.member-role {
+		font-size: 11px;
+		font-weight: 700;
+		color: rgba(255, 255, 255, 0.5);
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+	.member-name {
+		font-size: 14px;
+		font-weight: 700;
+		color: #fff;
+	}
+	.member-contact {
+		font-size: 12px;
+		color: #ffcb76;
+		text-decoration: none;
+		word-break: break-all;
+		transition: opacity 0.2s ease;
+	}
+	.member-contact:hover {
+		text-decoration: underline;
+		opacity: 0.85;
+	}
 
 	@media (max-width: 768px) {
 		.detail-content {
