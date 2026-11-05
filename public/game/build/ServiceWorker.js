@@ -1,16 +1,16 @@
-const cacheName = "Ludik Studio-Fortunato 21-1.0";
+const cacheName = "Ludik Studio-21 Fortunato-1.0";
 const contentToCache = [
-    "Build/Nueva carpeta.loader.js",
-    "Build/Nueva carpeta.framework.js.br",
-    "Build/Nueva carpeta.data.br",
-    "Build/Nueva carpeta.wasm.br",
+    "Build/21-fortunato.loader.js",
+    "Build/21-fortunato.framework.js.br",
+    "Build/21-fortunato.data.br",
+    "Build/21-fortunato.wasm.br",
     "TemplateData/style.css"
 
 ];
 
 self.addEventListener('install', function (e) {
     console.log('[Service Worker] Install');
-
+    
     e.waitUntil((async function () {
       const cache = await caches.open(cacheName);
       console.log('[Service Worker] Caching all: app shell and content');

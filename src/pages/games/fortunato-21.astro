@@ -1,0 +1,229 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const adsenseClientId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID;
+const adsenseEnabled = import.meta.env.PROD && adsenseClientId;   
+const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
+---
+
+<Layout title="Fortunato 21 | Detalle del Juego | Ludik Hub" description="Conoce todo sobre Fortunato 21, el juego de cartas espacial desarrollado por Ludik Studios." lang="es" adsenseClientId={adsenseEnabled ? adsenseClientId : undefined} gaMeasurementId={gaMeasurementId}>
+	<main class="game-detail-shell">
+		<!-- BOTÓN REGRESAR -->
+		<div class="nav-back">
+			<a href="/" class="btn-back">
+				<span aria-hidden="true">←</span> Volver al Hub
+			</a>
+		</div>
+
+		<!-- ENCABEZADO DEL JUEGO -->
+		<header class="detail-header">
+			<div class="header-badge">DETALLES DEL PROYECTO</div>
+			<h1>FORTUNATO <em>21</em></h1>
+			<p class="tagline">Cartas, táctica y suerte en las profundidades del espacio.</p>
+		</header>
+
+		<!-- CONTENIDO PRINCIPAL -->
+		<section class="detail-content">
+			<article class="main-info">
+				<h2>Sobre el juego</h2>
+				<p>
+					<strong>Fortunato 21</strong> es un juego de cartas estilo roguelike/blackjack ambientado en el espacio exterior. Enfrenta fases de jefes desafiantes, gestiona tus fichas en la tienda entre rondas y utiliza potenciadores estratégicos para alterar las probabilidades a tu favor.
+				</p>
+
+				<h3>Características clave</h3>
+				<ul>
+					<li><strong>Mecánica táctica de 21:</strong> Reglas clásicas de cartas con giros cibernéticos.</li>
+					<li><strong>Sistema de Tienda:</strong> Compra cartas especiales y artefactos para modificar tus probabilidades.</li>
+					<li><strong>Fases de Jefes:</strong> Cada nivel concluye con un duelo de apuestas contra entidades espaciales.</li>
+					<li><strong>Construido en Unity WebGL:</strong> Ejecución fluida directamente en tu navegador sin descargas.</li>
+				</ul>
+
+				<div class="play-cta">
+					<a href="/#home" class="btn-play-now">
+						<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+						IR AL HUB Y JUGAR
+					</a>
+				</div>
+			</article>
+
+			<!-- FICHA TÉCNICA -->
+			<aside class="sidebar-info">
+				<div class="info-card">
+					<h3>Ficha Técnica</h3>
+					<dl class="tech-specs">
+						<div>
+							<dt>Desarrollador</dt>
+							<dd>Ludik Studios</dd>
+						</div>
+						<div>
+							<dt>Género</dt>
+							<dd>Cartas / Estrategia</dd>
+						</div>
+						<div>
+							<dt>Motor</dt>
+							<dd>Unity WebGL</dd>
+						</div>
+						<div>
+							<dt>Estado</dt>
+							<dd class="status-active">Disponible</dd>
+						</div>
+						<div>
+							<dt>Plataformas</dt>
+							<dd>Web (PC & Mobile)</dd>
+						</div>
+					</dl>
+				</div>
+			</aside>
+		</section>
+	</main>
+</Layout>
+
+<style>
+	:global(*) { box-sizing: border-box; }
+	:global(body) {
+		min-width: 320px;
+		min-height: 100vh;
+		color: #fff;
+		background-color: #050b14;
+		background-image:
+			radial-gradient(ellipse at 50% 0%, rgba(26, 54, 110, 0.45), transparent 70%),
+			linear-gradient(180deg, #050b14 0%, #091325 100%);
+		font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+	}
+
+	.game-detail-shell {
+		width: min(1100px, 100%);
+		margin: 0 auto;
+		padding: 32px 24px 64px;
+		display: flex;
+		flex-direction: column;
+		gap: 32px;
+	}
+
+	.btn-back {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		color: #ffcb76;
+		text-decoration: none;
+		font-weight: 700;
+		font-size: 14px;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		transition: opacity 0.2s ease;
+	}
+	.btn-back:hover { opacity: 0.8; }
+
+	.detail-header {
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		padding-bottom: 24px;
+	}
+	.header-badge {
+		font-size: 10px;
+		font-weight: 900;
+		color: #ffcb76;
+		letter-spacing: 2px;
+		margin-bottom: 8px;
+	}
+	.detail-header h1 {
+		margin: 0;
+		font-family: Impact, 'Arial Black', sans-serif;
+		font-size: clamp(40px, 6vw, 64px);
+		letter-spacing: 1px;
+		line-height: 1;
+	}
+	.detail-header h1 em { color: #ffcb76; font-style: normal; }
+	.tagline {
+		margin: 12px 0 0;
+		font-size: 16px;
+		color: rgba(255, 255, 255, 0.7);
+	}
+
+	.detail-content {
+		display: grid;
+		grid-template-columns: 1fr 320px;
+		gap: 36px;
+	}
+
+	.main-info h2, .main-info h3 {
+		font-family: Impact, 'Arial Black', sans-serif;
+		letter-spacing: 0.5px;
+		color: #fff;
+	}
+	.main-info p {
+		font-size: 15px;
+		line-height: 1.7;
+		color: rgba(255, 255, 255, 0.85);
+	}
+	.main-info ul {
+		padding-left: 20px;
+		margin: 16px 0 32px;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	.main-info li {
+		font-size: 14px;
+		line-height: 1.6;
+		color: rgba(255, 255, 255, 0.8);
+	}
+	.main-info li strong { color: #ffcb76; }
+
+	.btn-play-now {
+		padding: 14px 28px;
+		border-radius: 6px;
+		background: linear-gradient(135deg, #ffcb76 0%, #e5a438 100%);
+		color: #071325;
+		font-family: 'Arial Black', Impact, sans-serif;
+		font-size: 14px;
+		letter-spacing: 1px;
+		text-decoration: none;
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		box-shadow: 0 8px 24px rgba(255, 203, 118, 0.3);
+		transition: transform 0.2s ease;
+	}
+	.btn-play-now:hover { transform: translateY(-2px); }
+
+	.sidebar-info .info-card {
+		padding: 24px;
+		border-radius: 8px;
+		background: rgba(14, 27, 52, 0.6);
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		backdrop-filter: blur(8px);
+	}
+	.info-card h3 {
+		margin: 0 0 16px;
+		font-family: Impact, 'Arial Black', sans-serif;
+		font-size: 18px;
+		letter-spacing: 1px;
+		color: #ffcb76;
+	}
+	.tech-specs {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		margin: 0;
+	}
+	.tech-specs dt {
+		font-size: 11px;
+		font-weight: 700;
+		color: rgba(255, 255, 255, 0.5);
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+	.tech-specs dd {
+		margin: 2px 0 0;
+		font-size: 14px;
+		font-weight: 700;
+		color: #fff;
+	}
+	.status-active { color: #ffcb76 !important; }
+
+	@media (max-width: 768px) {
+		.detail-content {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
