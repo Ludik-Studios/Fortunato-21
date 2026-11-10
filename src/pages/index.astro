@@ -1,19 +1,50 @@
 ---
-
-
 import Layout from '../layouts/Layout.astro';
 import AdSlot from '../components/AdSlot.astro';
 
 const adsenseClientId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID;
-const adsenseEnabled = import.meta.env.PROD && adsenseClientId;   
+const adsenseEnabled = import.meta.env.PROD && adsenseClientId;    
 const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
 const currentUser = Astro.locals.user;
+
+// Lista de juegos
+const games = [
+	{
+		id: '21-fortunato',
+		title: '21 Fortunato',
+		subtitle: 'Juego de cartas espacial',
+		genre: 'Cartas / Estrategia',
+		platform: 'UNITY WEBGL',
+		status: 'DISPONIBLE',
+		description: 'Te damos la bienvenida a Ludik Hub. Fortunato 21 es nuestro juego de cartas inspirado en el espacio, creado por Ludik Studios.',
+		gameUrl: '/game/build/21-fortunato/index.html',
+		detailUrl: '/games/fortunato-21',
+		thumbnail: '♦',
+		active: true
+	},
+	{
+		id: 'coretaker',
+		title: 'Coretaker',
+		subtitle: 'Acción y supervivencia táctica',
+		genre: 'Acción / Supervivencia',
+		platform: 'UNITY WEBGL',
+		status: 'DISPONIBLE',
+		description: 'Protege el núcleo energético y sobrevive a los desafíos espaciales en Coretaker, la nueva experiencia de acción desarrollada en Unity WebGL por Ludik Studios.',
+		gameUrl: '/game/build/coretaker/index.html',
+		detailUrl: '/games/coretaker',
+		thumbnail: '⚡',
+		active: false
+	}
+];
+
+// Slots vacíos para el carrusel
+const emptySlotsCount = 3;
 ---
 
-<Layout title="Ludik Hub | Juegos de Ludik Studios" description="Descubre los juegos independientes de Ludik Studios." lang="es" adsenseClientId={adsenseEnabled ? adsenseClientId : undefined} gaMeasurementId={gaMeasurementId}>
+<Layout title="Ludik Hub | Ludik Studios" description="Descubre y juega los títulos independientes de Ludik Studios." lang="es" adsenseClientId={adsenseEnabled ? adsenseClientId : undefined} gaMeasurementId={gaMeasurementId}>
 	<main class="hub-shell">
+		<!-- BARRA SUPERIOR -->
 		<header class="topbar">
-  
 			<a class="brand" href="#home" aria-label="Inicio de Ludik Hub" data-ga-event="home_brand">
 				<span class="brand-card" aria-hidden="true">
 					<span class="brand-card-corner">K<i>♦</i></span>
@@ -23,7 +54,7 @@ const currentUser = Astro.locals.user;
 				<span>LUDIK <b>HUB</b></span>
 			</a>
 			<nav aria-label="Navegación principal">
-				<a href="#games" data-ga-event="games_nav">Juegos</a>
+				<a href="/catalog/" data-ga-event="games_nav">Catálogo</a>
 				<a href="/donate/" data-ga-event="donate_nav">Apóyanos</a>
 				{currentUser ? (
 					<>
@@ -41,65 +72,234 @@ const currentUser = Astro.locals.user;
 			<a class="studio-link" href="/about/" data-ga-event="studio_link">Un proyecto de Ludik Studios <span aria-hidden="true">↗</span></a>
 		</header>
 
-		<section class="feature" id="home" aria-label="Juego destacado">
-			<div class="game-frame" aria-label="Juego de Unity Fortunato 21">
-				<div class="game-interface">
-					<iframe
-						class="unity-player"
-						src="/game/build/index.html"
-						title="Fortunato 21"
-						allow="autoplay; fullscreen; gamepad"
-						allowfullscreen
-					></iframe>
+		<!-- STAGE / HERO ESTILO DEEP SILVER -->
+		<section class="ds-stage" id="home" aria-label="Juego destacado">
+			<div class="stage-container">
+				<!-- LADO IZQUIERDO: DETALLES DEL JUEGO SELECCIONADO -->
+				<div class="stage-info">
+					<div class="badge-status">
+						<span class="pulse-dot"></span>
+						<span>DESTACADO DE LUDIK</span>
+					</div>
+					<h1 class="game-title" id="hero-title">Fortunato <em>21</em></h1>
+					<p class="game-genre" id="hero-genre">GÉNERO: <b>JUEGO DE CARTAS / ESPACIAL</b></p>
+					<p class="game-description" id="hero-description">
+						Desafía la suerte en el espacio. Un juego táctico de 21 cartas con mecánicas únicas de tienda y potenciadores desarrollado en Unity WebGL.
+					</p>
+					
+					<div class="stage-actions">
+						<button class="btn-primary" type="button" id="hero-play-btn">
+							<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+							JUGAR AHORA
+						</button>
+						<!-- ENLACE A LA PÁGINA DE DESCRIPCIÓN DEL JUEGO -->
+						<a href="/games/fortunato-21" class="btn-secondary" id="hero-detail-btn" data-ga-event="game_details">
+							VER DETALLES
+						</a>
+					</div>
 				</div>
-				<button class="game-fullscreen-button" type="button" data-game-fullscreen aria-pressed="false">
-					<svg aria-hidden="true" viewBox="0 0 24 24">
-						<path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3" />
-					</svg>
-					<span data-game-fullscreen-label>Jugar en pantalla completa</span>
-				</button>
-				<p class="game-fullscreen-status" data-game-fullscreen-status role="status" aria-live="polite"></p>
-				<div class="frame-cards" aria-hidden="true">
-					<div class="frame-card frame-card-back"><span>Q</span><b>♠</b></div>
-					<div class="frame-card frame-card-front"><span>J</span><b>♦</b></div>
-				</div>
-				<div class="frame-dice" aria-hidden="true">
-					<div class="die die-five"><i></i><i></i><i></i><i></i><i></i></div>
-					<div class="die die-four"><i></i><i></i><i></i><i></i></div>
+
+				<!-- LADO DERECHO: FRAME INTERACTIVO CON PORTADA PREVIA -->
+				<div class="stage-view">
+					<div class="game-frame" id="games" aria-label="Juego de Unity Fortunato 21">
+						
+						<!-- CONTENEDOR DINÁMICO DEL JUEGO -->
+						<div class="game-interface" id="game-interface">
+							<!-- PORTADA DE INICIO (Se muestra por defecto hasta hacer clic) -->
+							<!-- CONTENEDOR DEL IFRAME DE UNITY (Oculto hasta que cargue) -->
+							<div class="game-player-wrapper hidden" id="game-player-wrapper"></div>
+							<div class="game-poster" id="game-poster">
+								<div class="poster-content">
+									<span class="poster-icon" id="poster-icon">♦</span>
+									<h3 id="poster-title">Fortunato 21</h3>
+									<p id="poster-subtitle">Haz clic para cargar el juego en el navegador</p>
+									<button class="btn-play-trigger" type="button" id="btn-start-game">
+										<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+											<path d="M8 5v14l11-7z"/>
+										</svg>
+										Cargar Juego
+									</button>
+								</div>
+							</div>
+						</div>
+
+						<!-- BOTÓN DE PANTALLA COMPLETA (Oculto hasta que cargue el juego) -->
+						<button class="game-fullscreen-button hidden" type="button" data-game-fullscreen aria-pressed="false">
+							<svg aria-hidden="true" viewBox="0 0 24 24">
+								<path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3" />
+							</svg>
+							<span data-game-fullscreen-label>Pantalla completa</span>
+						</button>
+						<p class="game-fullscreen-status" data-game-fullscreen-status role="status" aria-live="polite"></p>
+					</div>
 				</div>
 			</div>
+		</section>
 
-			<aside class="game-info" aria-labelledby="game-title">
-				<p class="eyebrow"><span></span> INFORMACIÓN DEL JUEGO</p>
-				<h1 id="game-title">Fortunato<br /><em>21</em></h1>
-				<p class="intro">Te damos la bienvenida a Ludik Hub. Fortunato 21 es nuestro juego de cartas inspirado en el espacio, creado por Ludik Studios.</p>
-				<div class="feature-meta">
-					<div><span class="meta-label">GÉNERO</span><strong>Juego de cartas</strong></div>
-					<span class="coming-soon">UNITY WEBGL</span>
+		<!-- CARRUSEL DE CATÁLOGO / SELECCIÓN DE JUEGOS -->
+		<section class="ds-carousel-section" id="catalogo" aria-label="Catálogo de juegos">
+			<div class="carousel-header">
+				<h2>NUESTROS <span>JUEGOS</span></h2>
+				<p>Selecciona un título para cargarlo en el escenario principal</p>
+			</div>
+
+			<div class="carousel-track-wrapper">
+				<div class="carousel-track">
+					<!-- JUEGO ACTUAL (FORTUNATO 21) -->
+					{games.map((game) => (
+						<article class={`game-card ${game.active ? 'active' : ''}`} data-game-id={game.id} role="button" tabindex="0">
+							<div class="card-media">
+								<div class="card-icon">{game.thumbnail}</div>
+								<span class="card-badge">{game.status}</span>
+							</div>
+							<div class="card-body">
+								<span class="card-platform">{game.platform}</span>
+								<h3 class="card-title">{game.title}</h3>
+								<p class="card-subtitle">{game.subtitle}</p>
+							</div>
+							<div class="card-glow"></div>
+						</article>
+					))}
+
+					<!-- SLOTS VACÍOS / PRÓXIMAMENTE -->
+					{Array.from({ length: emptySlotsCount }).map((_, i) => (
+						<article class="game-card empty-slot">
+							<div class="card-media empty-media">
+								<div class="plus-icon">+</div>
+								<span class="card-badge coming">EN DESARROLLO</span>
+							</div>
+							<div class="card-body">
+								<span class="card-platform">LUDIK LABS</span>
+								<h3 class="card-title">Próximamente #{i + 1}</h3>
+								<p class="card-subtitle">Proyecto sin anunciar</p>
+							</div>
+						</article>
+					))}
 				</div>
-				<a class="explore-link" href="#games" data-ga-event="explore_games">Explorar los juegos <span aria-hidden="true">↓</span></a>
-			</aside>
+			</div>
 		</section>
 
-	
-
-		<section class="lower-row" id="games" aria-label="Novedades de juegos">
-			<div class="update-note"><span class="update-icon" aria-hidden="true">✳</span><p><b>Un nuevo juego está tomando forma.</b><br />Pequeños mundos, creados con curiosidad por Ludik Studios.</p></div>
-			<a id="about" class="about-link" href="mailto:hello@ludikstudios.com" data-ga-event="contact_email">Hecho con curiosidad <span aria-hidden="true">↗</span></a>
-		</section>
+		<!-- PIE DE PÁGINA NOTAS -->
+		<footer class="lower-row">
+			<div class="update-note">
+				<span class="update-icon" aria-hidden="true">✳</span>
+				<p><b>Ludik Studios Hub</b><br />Experiencias indie hechas con curiosidad.</p>
+			</div>
+			<a class="about-link" href="mailto:hello@ludikstudios.com" data-ga-event="contact_email">Contacto & Prensa <span aria-hidden="true">↗</span></a>
+		</footer>
 	</main>
 </Layout>
 
-<script>
-	const gameFrame = document.querySelector('.game-frame');
-	const fullscreenButton = document.querySelector('[data-game-fullscreen]');
+<script define:vars={{ initialGames: games }}>
+	const gamePoster = document.getElementById('game-poster');
+	const gamePlayerWrapper = document.getElementById('game-player-wrapper');
+	const posterIcon = document.getElementById('poster-icon');
+	const posterTitle = document.getElementById('poster-title');
+	const startBtn = document.getElementById('btn-start-game');
+	const heroPlayBtn = document.getElementById('hero-play-btn');
+	const fullscreenBtn = document.querySelector('[data-game-fullscreen]');
 	const fullscreenLabel = document.querySelector('[data-game-fullscreen-label]');
 	const fullscreenStatus = document.querySelector('[data-game-fullscreen-status]');
+	const gameFrame = document.querySelector('.game-frame');
 	const fallbackClass = 'game-frame--fullscreen-fallback';
 
+	const heroTitle = document.getElementById('hero-title');
+	const heroGenre = document.getElementById('hero-genre');
+	const heroDescription = document.getElementById('hero-description');
+	const heroDetailBtn = document.getElementById('hero-detail-btn');
+
+	let currentGame = initialGames[0];
+	let gameLoaded = false;
+
+	function loadCurrentGame() {
+		if (!gamePlayerWrapper || !gamePoster) return;
+
+		gamePlayerWrapper.innerHTML = `
+			<iframe
+				class="unity-player"
+				src="${currentGame.gameUrl}"
+				title="${currentGame.title}"
+				allow="autoplay; fullscreen; gamepad"
+				allowfullscreen
+				style="width: 100%; height: 100%; border: 0; display: block;"
+			></iframe>
+		`;
+
+		gamePoster.classList.add('hidden');
+		gamePlayerWrapper.classList.remove('hidden');
+		gameLoaded = true;
+
+		if (fullscreenBtn) {
+			fullscreenBtn.classList.remove('hidden');
+		}
+
+		document.getElementById('games')?.scrollIntoView({ behavior: 'smooth' });
+	}
+
+	function resetToPoster(game) {
+		if (!gamePoster || !gamePlayerWrapper) return;
+
+		// Si habÃ­a un juego corriendo, vaciamos el iframe para liberar recursos y audio
+		gamePlayerWrapper.innerHTML = '';
+		gamePlayerWrapper.classList.add('hidden');
+
+		// Actualizamos los datos del poster manteniendo el mismo botÃ³n estilizado intacto
+		if (posterIcon) posterIcon.textContent = game.thumbnail;
+		if (posterTitle) posterTitle.textContent = game.title;
+
+		gamePoster.classList.remove('hidden');
+		gameLoaded = false;
+
+		if (fullscreenBtn) {
+			fullscreenBtn.classList.add('hidden');
+		}
+	}
+
+	function selectGame(game) {
+		currentGame = game;
+
+		// Actualizar informaciÃ³n del Hero
+		if (heroTitle) heroTitle.textContent = game.title;
+		if (heroGenre) heroGenre.innerHTML = `GÉNERO: <b>${game.genre.toUpperCase()}</b>`;
+		if (heroDescription) heroDescription.textContent = game.description;
+		if (heroDetailBtn) heroDetailBtn.setAttribute('href', game.detailUrl);
+
+		// Actualizar tarjeta activa en el carrusel
+		document.querySelectorAll('.game-card[data-game-id]').forEach((card) => {
+			if (card.getAttribute('data-game-id') === game.id) {
+				card.classList.add('active');
+			} else {
+				card.classList.remove('active');
+			}
+		});
+
+		// Mostrar la portada con el botÃ³n "Cargar Juego" para el juego seleccionado
+		resetToPoster(game);
+	}
+
+	startBtn?.addEventListener('click', loadCurrentGame);
+	heroPlayBtn?.addEventListener('click', loadCurrentGame);
+
+	document.querySelectorAll('.game-card[data-game-id]').forEach((card) => {
+		card.addEventListener('click', () => {
+			const id = card.getAttribute('data-game-id');
+			const selected = initialGames.find((g) => g.id === id);
+			if (selected) selectGame(selected);
+		});
+		card.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter' || e.key === ' ') {
+				e.preventDefault();
+				const id = card.getAttribute('data-game-id');
+				const selected = initialGames.find((g) => g.id === id);
+				if (selected) selectGame(selected);
+			}
+		});
+	});
+
+	// LÃ³gica de pantalla completa
 	if (
 		gameFrame instanceof HTMLElement &&
-		fullscreenButton instanceof HTMLButtonElement &&
+		fullscreenBtn instanceof HTMLButtonElement &&
 		fullscreenLabel instanceof HTMLSpanElement &&
 		fullscreenStatus instanceof HTMLParagraphElement
 	) {
@@ -108,12 +308,12 @@ const currentUser = Astro.locals.user;
 				document.fullscreenElement === gameFrame || gameFrame.classList.contains(fallbackClass);
 			fullscreenLabel.textContent = isFullscreen
 				? 'Salir de pantalla completa'
-				: 'Jugar en pantalla completa';
-			fullscreenButton.setAttribute('aria-pressed', String(isFullscreen));
+				: 'Pantalla completa';
+			fullscreenBtn.setAttribute('aria-pressed', String(isFullscreen));
 		};
 
 		document.addEventListener('fullscreenchange', updateFullscreenButton);
-		fullscreenButton.addEventListener('click', async () => {
+		fullscreenBtn.addEventListener('click', async () => {
 			if (gameFrame.classList.contains(fallbackClass)) {
 				gameFrame.classList.remove(fallbackClass);
 				document.documentElement.classList.remove(fallbackClass);
@@ -129,7 +329,7 @@ const currentUser = Astro.locals.user;
 
 			try {
 				if (typeof gameFrame.requestFullscreen !== 'function') {
-					throw new Error('Fullscreen API is unavailable');
+					throw new Error('Fullscreen API unavailable');
 				}
 				await gameFrame.requestFullscreen();
 				fullscreenStatus.textContent = '';
@@ -137,7 +337,7 @@ const currentUser = Astro.locals.user;
 				gameFrame.classList.add(fallbackClass);
 				document.documentElement.classList.add(fallbackClass);
 				fullscreenStatus.textContent =
-					'El navegador no permite el modo inmersivo; el juego ocupará toda la pantalla disponible.';
+					'Navegador sin modo inmersivo; expandiendo a pantalla completa.';
 				updateFullscreenButton();
 			}
 		});
@@ -149,47 +349,13 @@ const currentUser = Astro.locals.user;
 	:global(body) {
 		min-width: 320px;
 		min-height: 100vh;
-		color: #19152e;
+		color: #fff;
 		position: relative;
-		background-color: #07172d;
+		background-color: #050b14;
 		background-image:
-			radial-gradient(1px 1px at 7% 17%, rgba(224, 240, 255, .9) 99%, transparent),
-			radial-gradient(1px 1px at 16% 73%, rgba(224, 240, 255, .75) 99%, transparent),
-			radial-gradient(1px 1px at 25% 38%, rgba(224, 240, 255, .8) 99%, transparent),
-			radial-gradient(1px 1px at 38% 84%, rgba(224, 240, 255, .8) 99%, transparent),
-			radial-gradient(1px 1px at 49% 12%, rgba(224, 240, 255, .85) 99%, transparent),
-			radial-gradient(1px 1px at 61% 56%, rgba(224, 240, 255, .75) 99%, transparent),
-			radial-gradient(1px 1px at 72% 27%, rgba(224, 240, 255, .9) 99%, transparent),
-			radial-gradient(1px 1px at 83% 78%, rgba(224, 240, 255, .8) 99%, transparent),
-			radial-gradient(1px 1px at 94% 43%, rgba(224, 240, 255, .75) 99%, transparent),
-			radial-gradient(ellipse at 50% 110%, rgba(22, 62, 111, .38), transparent 60%),
-			linear-gradient(160deg, #061326 0%, #0a1b34 58%, #101a35 100%);
+			radial-gradient(ellipse at 50% 0%, rgba(26, 54, 110, 0.45), transparent 70%),
+			linear-gradient(180deg, #050b14 0%, #091325 100%);
 		font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
-	}
-	:global(body)::before,
-	:global(body)::after {
-		content: '';
-		position: fixed;
-		inset: 0;
-		z-index: 0;
-		pointer-events: none;
-	}
-
-	:global(body)::before {
-		background-image:
-			radial-gradient(2px 2px at 19% 31%, rgba(232, 246, 255, .9) 99%, transparent),
-			radial-gradient(2px 2px at 43% 68%, rgba(232, 246, 255, .75) 99%, transparent),
-			radial-gradient(2px 2px at 68% 19%, rgba(232, 246, 255, .85) 99%, transparent),
-			radial-gradient(2px 2px at 88% 61%, rgba(232, 246, 255, .8) 99%, transparent);
-		animation: star-glimmer 5s ease-in-out infinite alternate;
-	}
-
-	:global(body)::after {
-		background-image:
-			radial-gradient(3px 3px at 31% 48%, rgba(145, 205, 255, .42), transparent 70%),
-			radial-gradient(3px 3px at 78% 87%, rgba(145, 205, 255, .36), transparent 70%),
-			radial-gradient(2px 2px at 93% 12%, rgba(145, 205, 255, .48), transparent 70%);
-		animation: star-glimmer 7s ease-in-out infinite alternate-reverse;
 	}
 
 	.hub-shell {
@@ -198,284 +364,470 @@ const currentUser = Astro.locals.user;
 		width: min(1440px, 100%);
 		min-height: 100vh;
 		margin-inline: auto;
-		padding: 26px 20px 22px;
+		padding: 24px 24px 32px;
 		display: flex;
 		flex-direction: column;
+		gap: 36px;
 	}
 
-	.topbar
-	{ min-height: 52px;
+	/* TOPBAR */
+	.topbar {
+		min-height: 52px;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		gap: 24px;
-		color: #fff;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		padding-bottom: 16px;
 	}
-
-	.brand
-	{display: inline-flex;
+	.brand {
+		display: inline-flex;
 		align-items: center;
 		gap: 11px;
 		color: inherit;
-		font-size: 15px;
+		font-size: 16px;
 		font-weight: 800;
 		letter-spacing: 1.5px;
 		text-decoration: none;
 	}
-
-	.brand b
-	{
-		color: #ffcb76; 
-	}
-
-	.brand-card
-	{ width: 31px;
-		height: 41px;
+	.brand b { color: #ffcb76; }
+	.brand-card {
+		width: 28px;
+		height: 38px;
 		position: relative;
-		flex: 0 0 auto;
-		display: inline-block;
 		border: 1px solid rgba(255,255,255,.9);
 		border-radius: 4px;
 		background: #fffaf1;
-		box-shadow: 0 3px 10px rgba(0,0,0,.2);
+		box-shadow: 0 3px 10px rgba(0,0,0,.4);
 		transform: rotate(-8deg); 
-
 		animation: rotarCarta 4s ease-in-out infinite alternate;
 	}
-
 	@keyframes rotarCarta {
-		0%{
-			transform: rotate(calc(-15deg - 5deg)) TranslateY(0);
-		}
-		50%{
-			transform: rotate(-15deg) translateY(-10px);
-		}
-		100%{
-			transform: rotate(calc(-15deg + 5deg)) TranslateY(0);
-		}
-		
+		0%{ transform: rotate(-15deg) translateY(0); }
+		100%{ transform: rotate(-5deg) translateY(-6px); }
 	}
-
-	.brand-card-corner
-	{ position: absolute; 
-		top: 4px; left: 4px; 
-		display: grid; justify-items: center; 
-		color: #25314a; 
-		font: 700 9px/.85 Georgia, 'Times New Roman', serif; 
+	.brand-card-corner {
+		position: absolute; top: 3px; left: 3px; 
+		color: #25314a; font: 700 8px/.85 Georgia, serif; 
 	}
-
-	.brand-card-corner i
-	{ color: #d94c60;
-		font: normal 8px/.9 Georgia, 'Times New Roman', serif; 
+	.brand-card-corner i { color: #d94c60; font-style: normal; }
+	.brand-card-suit {
+		position: absolute; top: 50%; left: 50%; 
+		color: #d94c60; font-size: 16px; transform: translate(-50%, -50%); 
 	}
+	.brand-card-corner-bottom { top: auto; left: auto; right: 3px; bottom: 3px; transform: rotate(180deg); }
 
-	.brand-card-suit 
-	{ position: absolute; 
-		top: 50%; left: 50%; 
-		color: #d94c60; 
-		font-size: 18px; 
-		line-height: 1; 
-		transform: translate(-50%, -50%); 
+	nav { display: flex; gap: clamp(16px, 2.5vw, 36px); }
+	nav a, .studio-link, .about-link {
+		color: rgba(255,255,255,.85); font-size: 13px; font-weight: 700; text-decoration: none; text-transform: uppercase; letter-spacing: 0.5px;
 	}
+	nav a:hover, .studio-link:hover, .about-link:hover { color: #ffcb76; }
 
-	.brand-card-corner-bottom 
-	{ top: auto; 
-		left: auto; 
-		right: 4px; 
-		bottom: 4px; 
-		transform: rotate(180deg); 
-	}
-
-	nav 
-	{ display: flex;
-		gap: clamp(18px, 3vw, 42px); 
-	}
-
-	nav a, .studio-link, .about-link 
-	{ color: inherit; 
-		font-size: 13px; 
-		font-weight: 700; 
-		text-decoration: none; 
-	}
-
-	nav a 
-	{
-	 opacity: .9; 
-	}
-
-	nav a:hover, .studio-link:hover, .about-link:hover 
-	{ text-decoration: underline; 
-		text-underline-offset: 4px; 
-	}
-
-	.studio-link span, .about-link span 
-	{ 
-		margin-left: 5px; 
-	}
-
-
-	.feature {
+	/* DEEP SILVER STAGE (HERO) */
+	.ds-stage {
 		width: 100%;
-		max-width: 1320px;
-		margin: 44px auto 32px;
+		border-radius: 12px;
+		background: rgba(14, 27, 52, 0.6);
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		backdrop-filter: blur(12px);
+		box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+		overflow: hidden;
+	}
+	.stage-container {
 		display: grid;
-		grid-template-columns: 1fr;
-		gap: 18px;
-		animation: arrive 700ms cubic-bezier(.2,.75,.25,1) both;
+		grid-template-columns: 1fr 1.3fr;
+		gap: 24px;
+		padding: 36px;
+		align-items: center;
+	}
+	.stage-info {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+	.badge-status {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 6px 12px;
+		border-radius: 20px;
+		background: rgba(255, 203, 118, 0.12);
+		border: 1px solid rgba(255, 203, 118, 0.4);
+		color: #ffcb76;
+		font-size: 10px;
+		font-weight: 800;
+		letter-spacing: 1.5px;
+		width: fit-content;
+	}
+	.pulse-dot {
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: #ffcb76;
+		box-shadow: 0 0 10px #ffcb76;
+		animation: pulse 2s infinite;
+	}
+	@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+	.game-title {
+		margin: 0;
+		font-family: Impact, 'Arial Black', sans-serif;
+		font-size: clamp(48px, 5vw, 76px);
+		line-height: 0.95;
+		text-transform: uppercase;
+		color: #fff;
+		letter-spacing: 1px;
+	}
+	.game-title em { color: #ffcb76; font-style: normal; }
+	.game-genre {
+		margin: 0;
+		font-size: 11px;
+		letter-spacing: 1.5px;
+		color: rgba(255, 255, 255, 0.6);
+	}
+	.game-genre b { color: #fff; }
+	.game-description {
+		margin: 8px 0 16px;
+		font-size: 15px;
+		line-height: 1.6;
+		color: rgba(255, 255, 255, 0.85);
+		max-width: 480px;
+	}
+	.stage-actions {
+		display: flex;
+		gap: 14px;
+		flex-wrap: wrap;
+	}
+	.btn-primary {
+		padding: 14px 28px;
+		border: none;
+		border-radius: 6px;
+		background: linear-gradient(135deg, #ffcb76 0%, #e5a438 100%);
+		color: #071325;
+		font-family: 'Arial Black', Impact, sans-serif;
+		font-size: 13px;
+		letter-spacing: 1px;
+		cursor: pointer;
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		box-shadow: 0 8px 24px rgba(255, 203, 118, 0.3);
+		transition: transform 0.2s ease, box-shadow 0.2s ease;
+	}
+	.btn-primary:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 12px 30px rgba(255, 203, 118, 0.45);
 	}
 
+	/* ESTILOS DEL BOTÓN / ENLACE VER DETALLES */
+	.btn-secondary {
+		padding: 14px 24px;
+		border-radius: 6px;
+		background: rgba(255, 255, 255, 0.08);
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		color: #fff;
+		font-family: 'Arial Black', Impact, sans-serif;
+		font-size: 13px;
+		letter-spacing: 1px;
+		text-decoration: none;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		transition: background 0.2s ease, border-color 0.2s ease;
+	}
+	.btn-secondary:hover {
+		background: rgba(255, 255, 255, 0.16);
+		border-color: rgba(255, 255, 255, 0.35);
+		color: #fff;
+	}
+
+	/* STAGE GAME FRAME */
+	.stage-view { width: 100%; }
 	.game-frame {
 		width: 100%;
-		aspect-ratio: 4 / 3;
+		aspect-ratio: 16 / 10;
 		position: relative;
-		border: 2px solid #d8eaff;
-		background-color: #102b60;
-		background-image:
-			radial-gradient(circle, rgba(255,255,255,.82) 1px, transparent 1.5px),
-			repeating-linear-gradient(0deg, transparent 0 23px, rgba(143,195,255,.08) 24px 25px),
-			repeating-linear-gradient(90deg, transparent 0 23px, rgba(143,195,255,.08) 24px 25px),
-			linear-gradient(135deg, #102d68, #07162f);
-		background-size: 41px 37px, auto, auto, auto;
-		isolation: isolate;
+		border-radius: 8px;
+		border: 2px solid rgba(255, 255, 255, 0.2);
+		background: #000;
+		overflow: hidden;
+		box-shadow: 0 16px 40px rgba(0,0,0,0.7);
 	}
+	.game-interface { position: absolute; inset: 0; }
+	.game-player-wrapper {
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		inset: 0;
+	}
+	.game-player-wrapper.hidden,
+	.game-poster.hidden {
+		display: none !important;
+	}
+	.game-player-wrapper :global(.unity-player),
+	.game-player-wrapper :global(iframe),
+	.game-interface :global(.unity-player),
+	.game-interface :global(iframe),
+	.unity-player {
+		width: 100%;
+		height: 100%;
+		border: 0;
+		display: block;
+	}
+
+	/* PORTADA DE INICIO DEL JUEGO */
+	.game-poster,
+	.game-interface :global(.game-poster) {
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: radial-gradient(circle at center, #183366 0%, #081020 100%);
+		text-align: center;
+		padding: 20px;
+	}
+	.poster-content,
+	.game-interface :global(.poster-content) {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 12px;
+	}
+	.poster-icon,
+	.game-interface :global(.poster-icon) {
+		font-size: 54px;
+		color: #d94c60;
+		text-shadow: 0 0 24px rgba(217, 76, 96, 0.6);
+	}
+	.poster-content h3,
+	.game-interface :global(.poster-content h3) {
+		margin: 0;
+		font-family: Impact, 'Arial Black', sans-serif;
+		font-size: 28px;
+		color: #fff;
+		letter-spacing: 1px;
+	}
+	.poster-content p,
+	.game-interface :global(.poster-content p) {
+		margin: 0 0 8px;
+		font-size: 13px;
+		color: rgba(255, 255, 255, 0.7);
+	}
+	.btn-play-trigger,
+	.game-interface :global(.btn-play-trigger) {
+		padding: 12px 24px;
+		border: none;
+		border-radius: 6px;
+		background: #ffcb76;
+		color: #071325;
+		font-family: 'Arial Black', Impact, sans-serif;
+		font-size: 14px;
+		letter-spacing: 1px;
+		cursor: pointer;
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		box-shadow: 0 6px 20px rgba(255, 203, 118, 0.35);
+		transition: transform 0.2s ease, background 0.2s ease;
+	}
+	.btn-play-trigger:hover,
+	.game-interface :global(.btn-play-trigger:hover) {
+		transform: scale(1.05);
+		background: #ffe0a3;
+	}
+
+	.game-fullscreen-button {
+		position: absolute;
+		right: 12px;
+		bottom: 12px;
+		z-index: 5;
+		padding: 8px 12px;
+		border-radius: 4px;
+		background: rgba(7, 19, 37, 0.85);
+		border: 1px solid rgba(255, 255, 255, 0.3);
+		color: #fff;
+		font-size: 11px;
+		font-weight: 700;
+		cursor: pointer;
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		backdrop-filter: blur(4px);
+	}
+	.game-fullscreen-button.hidden { display: none !important; }
+	.game-fullscreen-button svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+	.game-fullscreen-status { display: none; }
+
 	.game-frame:fullscreen,
 	.game-frame--fullscreen-fallback {
-		position: fixed;
-		inset: 0;
-		z-index: 9999;
-		width: 100vw;
-		height: 100vh;
-		height: 100dvh;
-		max-width: none;
+		position: fixed; inset: 0; z-index: 9999; width: 100vw; height: 100vh; border-radius: 0; border: 0;
+	}
+
+	/* CARRUSEL DE SELECCIÓN DE JUEGOS */
+	.ds-carousel-section {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+	.carousel-header h2 {
 		margin: 0;
-		aspect-ratio: auto;
-		border: 0;
-		background: #080d17;
+		font-family: Impact, 'Arial Black', sans-serif;
+		font-size: 24px;
+		letter-spacing: 1px;
 	}
-	.game-frame::before { content: ''; position: absolute; inset: 7px; z-index: 2; border: 1px solid rgba(196,224,255,.45); pointer-events: none; }
-    .game-interface { position: absolute; inset: 12px 14px; overflow: hidden; border: 2px solid #07152b; background: #080d17; }   
-	.unity-player { width: 100%; height: 100%; position: absolute; inset: 0; border: 0; background: #080d17; }
-	.game-frame:fullscreen::before,
-	.game-frame--fullscreen-fallback::before,
-	.game-frame:fullscreen .frame-cards,
-	.game-frame:fullscreen .frame-dice,
-	.game-frame--fullscreen-fallback .frame-cards,
-	.game-frame--fullscreen-fallback .frame-dice { display: none; }
-	.game-frame:fullscreen .game-interface,
-	.game-frame--fullscreen-fallback .game-interface { inset: 0; border: 0; }
-	.game-fullscreen-button { display: none; }
-	.game-fullscreen-status { display: none; }
-	.game-placeholder { position: absolute; inset: 0; padding: 24px; display: grid; align-content: center; justify-items: center; gap: 10px; color: rgba(255,255,255,.84); text-align: center; font-family: 'Courier New', monospace; }
-	.game-placeholder strong { color: #fff; font-family: 'Arial Black', Impact, sans-serif; font-size: 17px; }
-	.game-placeholder span { max-width: 440px; font-size: 13px; line-height: 1.5; }
-	.frame-cards { position: absolute; z-index: 3; left: 4%; bottom: 2px; width: 132px; height: 104px; pointer-events: none; }
-	.frame-card { width: 52px; height: 76px; position: absolute; border: 2px solid #fff9e9; background: #fff9e9; box-shadow: 3px 4px 0 #091a38; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 5px; color: #10254b; font: 800 14px/1 Georgia, serif; }
-	.frame-card b { font-size: 24px; line-height: 1; }
-	.frame-card-back { left: 8px; bottom: 5px; transform: rotate(-13deg); }
-	.frame-card-front { left: 52px; bottom: 8px; color: #c9414b; transform: rotate(8deg); }
-	.frame-dice { width: 94px; height: 66px; position: absolute; z-index: 3; top: 4px; right: 4%; transform: rotate(-7deg); pointer-events: none; }
-	.die { width: 43px; height: 43px; position: absolute; padding: 6px; border: 2px solid #fff; border-radius: 9px; background: #eaf4ff; box-shadow: 3px 4px 0 #091a38; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); align-items: center; justify-items: center; }
-	.die-five { top: 0; right: 0; z-index: 2; transform: rotate(10deg); }
-	.die-four { top: 17px; left: 0; z-index: 1; transform: rotate(-10deg); }
-	.die i { width: 5px; height: 5px; border-radius: 50%; background: #14315d; }
-	.die-four i { background: #d8474d; }
-	.die-five i:nth-child(1) { grid-area: 1 / 1; }
-	.die-five i:nth-child(2) { grid-area: 1 / 3; }
-	.die-five i:nth-child(3) { grid-area: 2 / 2; }
-	.die-five i:nth-child(4) { grid-area: 3 / 1; }
-	.die-five i:nth-child(5) { grid-area: 3 / 3; }
-	.die-four i:nth-child(1) { grid-area: 1 / 1; }
-	.die-four i:nth-child(2) { grid-area: 1 / 3; }
-	.die-four i:nth-child(3) { grid-area: 3 / 1; }
-	.die-four i:nth-child(4) { grid-area: 3 / 3; }
+	.carousel-header h2 span { color: #ffcb76; }
+	.carousel-header p {
+		margin: 4px 0 0;
+		font-size: 12px;
+		color: rgba(255, 255, 255, 0.6);
+	}
 
-	.game-info { min-height: 280px; padding: clamp(28px, 4vw, 56px); border: 1px solid rgba(224, 225, 255, .46); border-radius: 8px; background: rgba(39, 69, 177, .64); box-shadow: 0 22px 60px rgba(4, 11, 35, .28); color: #fff; display: flex; flex-direction: column; justify-content: center; font-family: 'Courier New', monospace; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
-	.game-info .eyebrow, .game-info .meta-label { color: #fff; font-family: 'Arial Black', Impact, sans-serif; font-size: 10px; font-weight: 900; letter-spacing: 1.5px; }
-	.game-info .eyebrow { display: flex; align-items: center; gap: 9px; margin: 0 0 22px; }
-	.game-info .eyebrow span { width: 9px; height: 9px; border: 2px solid #fff; border-radius: 0; background: #b08be2; transform: rotate(45deg); }
-	.game-info h1 { margin: 0; color: #55366f; font-family: Impact, 'Arial Black', sans-serif; font-size: clamp(48px, 5.7vw, 76px); font-weight: 900; line-height: .88; text-transform: uppercase; -webkit-text-stroke: 1px #eee4ff; paint-order: stroke fill; }
-	.game-info h1 em { color: #55366f; font-style: normal; font-weight: 900; }
-	.game-info .intro { max-width: 405px; margin: 23px 0 30px; color: #fff; font-family: 'Courier New', monospace; font-size: 14px; font-weight: 700; line-height: 1.65; }
-	.game-info .feature-meta { max-width: 400px; padding: 16px 0; border-top: 2px dashed rgba(255,255,255,.72); border-bottom: 2px dashed rgba(255,255,255,.72); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-	.game-info .feature-meta div { display: grid; gap: 6px; }
-	.game-info .meta-label { color: rgba(255,255,255,.78); font-size: 9px; }
-	.game-info .feature-meta strong { color: #fff; font-family: 'Arial Black', Impact, sans-serif; font-size: 16px; font-weight: 900; }
-	.game-info .coming-soon { padding: 7px 9px; border: 1px solid rgba(255,255,255,.52); border-radius: 3px; background: #4e3473; color: #fff; font-family: 'Arial Black', Impact, sans-serif; font-size: 9px; font-weight: 900; letter-spacing: 1px; white-space: nowrap; }
-	.game-info .explore-link { width: fit-content; margin-top: 23px; padding: 8px 10px 8px 13px; border: 1px solid rgba(255,255,255,.62); border-radius: 3px; background: #4e3473; color: #fff; display: inline-flex; align-items: center; gap: 14px; font-family: 'Arial Black', Impact, sans-serif; font-size: 12px; font-weight: 900; text-decoration: none; text-transform: uppercase; }
-	.game-info .explore-link span { width: 26px; height: 26px; border: 1px solid rgba(255,255,255,.62); border-radius: 2px; background: rgba(255,255,255,.12); color: #fff; display: grid; place-items: center; transition: transform 180ms ease; }
-	.explore-link:hover span { transform: translateY(3px); }
+	.carousel-track-wrapper {
+		width: 100%;
+		overflow-x: auto;
+		padding-bottom: 12px;
+		scrollbar-width: thin;
+		scrollbar-color: #ffcb76 rgba(255,255,255,0.1);
+	}
+	.carousel-track {
+		display: grid;
+		grid-template-columns: repeat(5, minmax(220px, 1fr));
+		gap: 18px;
+	}
 
-	.lower-row { min-height: 66px; display: flex; align-items: end; justify-content: space-between; gap: 20px; color: white; }
+	/* TARJETAS DEL CARRUSEL */
+	.game-card {
+		position: relative;
+		border-radius: 8px;
+		background: rgba(15, 30, 58, 0.5);
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		padding: 14px;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		cursor: pointer;
+		transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+		overflow: hidden;
+	}
+	.game-card:hover {
+		transform: translateY(-4px);
+		border-color: rgba(255, 203, 118, 0.5);
+		background: rgba(24, 46, 87, 0.7);
+	}
+	.game-card.active {
+		border: 2px solid #ffcb76;
+		background: linear-gradient(180deg, rgba(39, 69, 177, 0.4) 0%, rgba(15, 30, 58, 0.8) 100%);
+		box-shadow: 0 10px 30px rgba(255, 203, 118, 0.2);
+	}
+
+	.card-media {
+		width: 100%;
+		height: 120px;
+		border-radius: 6px;
+		background: #0d1b36;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		position: relative;
+		display: grid;
+		place-items: center;
+	}
+	.card-icon {
+		font-size: 44px;
+		color: #ffcb76;
+		text-shadow: 0 0 20px rgba(255, 203, 118, 0.5);
+	}
+	.card-badge {
+		position: absolute;
+		top: 8px; right: 8px;
+		padding: 3px 6px;
+		border-radius: 3px;
+		background: #ffcb76;
+		color: #071325;
+		font-family: 'Arial Black', Impact, sans-serif;
+		font-size: 8px;
+		letter-spacing: 0.5px;
+	}
+	.card-badge.coming {
+		background: rgba(255, 255, 255, 0.15);
+		color: rgba(255, 255, 255, 0.7);
+		border: 1px solid rgba(255, 255, 255, 0.2);
+	}
+
+	.card-body {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+	.card-platform {
+		font-size: 9px;
+		font-weight: 800;
+		color: #ffcb76;
+		letter-spacing: 1px;
+	}
+	.card-title {
+		margin: 0;
+		font-size: 16px;
+		font-weight: 800;
+		color: #fff;
+	}
+	.card-subtitle {
+		margin: 0;
+		font-size: 11px;
+		color: rgba(255, 255, 255, 0.6);
+	}
+
+	/* SLOTS VACÍOS */
+	.empty-slot {
+		border-style: dashed;
+		border-color: rgba(255, 255, 255, 0.15);
+		opacity: 0.7;
+	}
+	.empty-slot:hover {
+		opacity: 1;
+		border-color: rgba(255, 255, 255, 0.35);
+	}
+	.empty-media {
+		background: rgba(255, 255, 255, 0.02);
+	}
+	.plus-icon {
+		font-size: 32px;
+		color: rgba(255, 255, 255, 0.2);
+		font-weight: 300;
+	}
+
+	/* FOOTER */
+	.lower-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding-top: 16px;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+	}
 	.update-note { display: flex; align-items: center; gap: 12px; }
-	.update-icon { width: 31px; height: 31px; border: 1px solid rgba(255,255,255,.6); border-radius: 50%; display: grid; place-items: center; color: #fff2c1; font-size: 18px; }
-	.update-note p { margin: 0; color: rgba(255,255,255,.82); font-size: 11px; line-height: 1.55; }
-	.update-note b { color: white; font-size: 12px; }
+	.update-icon {
+		width: 28px; height: 28px; border: 1px solid rgba(255,255,255,.3);
+		border-radius: 50%; display: grid; place-items: center; color: #ffcb76;
+	}
+	.update-note p { margin: 0; color: rgba(255,255,255,.7); font-size: 11px; line-height: 1.4; }
+	.update-note b { color: #fff; }
 
-	@keyframes arrive { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-	@keyframes star-glimmer { from { opacity: .22; } to { opacity: .82; } }
-	@media (max-width: 760px) {
-		.hub-shell { min-height: 100svh; padding: 18px 20px; }
-		.topbar { flex-wrap: wrap; gap: 12px; }
-		nav { order: 3; width: 100%; padding: 8px 0 2px; }
-		.studio-link { font-size: 11px; }
-		.feature { margin: 28px 0 22px; gap: 14px; }
-		.game-frame { height: clamp(420px, 100vw, 560px); min-height: 0; aspect-ratio: auto; }
-		.game-interface { inset: 22px; }
-		.game-fullscreen-button {
-			position: absolute;
-			right: calc(12px + env(safe-area-inset-right));
-			bottom: calc(12px + env(safe-area-inset-bottom));
-			z-index: 4;
-			min-height: 44px;
-			padding: 10px 14px;
-			border: 1px solid rgba(255,255,255,.75);
-			border-radius: 6px;
-			background: #4e3473;
-			color: #fff;
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			gap: 9px;
-			font: 700 12px/1.2 'Trebuchet MS', 'Segoe UI', sans-serif;
-			cursor: pointer;
-			touch-action: manipulation;
+	/* RESPONSIVE */
+	@media (max-width: 960px) {
+		.stage-container {
+			grid-template-columns: 1fr;
+			padding: 24px;
 		}
-		.game-fullscreen-button:focus-visible { outline: 3px solid #ffcb76; outline-offset: 3px; }
-		.game-fullscreen-button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
-		.game-fullscreen-status:not(:empty) {
-			position: absolute;
-			right: 12px;
-			bottom: calc(68px + env(safe-area-inset-bottom));
-			z-index: 4;
-			max-width: min(320px, calc(100% - 24px));
-			margin: 0;
-			padding: 8px 10px;
-			border-radius: 4px;
-			background: rgba(7, 21, 43, .92);
-			color: #fff;
-			font-size: 11px;
-			line-height: 1.4;
+		.game-title { font-size: 48px; }
+	}
+	@media (max-width: 600px) {
+		.topbar { flex-wrap: wrap; }
+		nav { order: 3; width: 100%; justify-content: space-between; }
+		.carousel-track {
+			grid-template-columns: repeat(5, minmax(180px, 1fr));
 		}
-		:global(html.game-frame--fullscreen-fallback),
-		:global(html.game-frame--fullscreen-fallback body) { overflow: hidden; }
-		:global(html.game-frame--fullscreen-fallback .hub-shell) { z-index: 9999; }
-		:global(html.game-frame--fullscreen-fallback .feature) { animation: none; transform: none; }
-		.frame-cards { transform: scale(.8); transform-origin: bottom left; }
-		.frame-dice { transform: scale(.82) rotate(-7deg); transform-origin: top right; }
-		.game-info { padding: 28px 24px; }
-		h1 { font-size: clamp(54px, 12vw, 76px); }
-		.intro { margin: 18px 0 22px; }
-		.lower-row { min-height: 52px; align-items: center; }
-	}
-	@media (max-width: 420px) {
-		.hub-shell { padding-inline: 20px; }
-		.studio-link { max-width: 130px; text-align: right; }
-		.coming-soon { font-size: 8px; }
-		.about-link { font-size: 11px; }
-	}
-	@media (prefers-reduced-motion: reduce) {
-		.feature { animation: none; }
-		.explore-link span { transition: none; }
-		:global(body)::before, :global(body)::after { animation: none; }
 	}
 </style>
