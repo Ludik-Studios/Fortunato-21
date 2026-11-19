@@ -1,0 +1,20 @@
+{
+	"title": "21 Fortunato",
+	"tagline": "Juego táctico de cartas espacial",
+	"category": "Videojuego",
+	"categorySlug": "videojuegos",
+	"status": "DISPONIBLE",
+	"year": "2025",
+	"featured": true,
+	"description": "Nuestro título insignia de cartas y estrategia con temática espacial. Combina mecánicas roguelike, sistema de tienda de artefactos intergalácticos y duelos contra jefes cósmicos en Unity WebGL.",
+	"playUrl": "/#home",
+	"detailUrl": "/games/fortunato-21",
+	"media": {
+		"coverImage": "/img/card-banner-21.jpg",
+		"videoUrl": "",
+		"gallery": []
+	},
+	"team": [
+		{ "role": "Desarrollador", "name": "Jesus Rodriguez", "contact": "jesusrb14827@gmail.com" }
+	]
+}

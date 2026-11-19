@@ -1,12 +1,13 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import GameReviews from '../../components/GameReviews.astro';
 
 const adsenseClientId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID;
 const adsenseEnabled = import.meta.env.PROD && adsenseClientId;   
 const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
 ---
 
-<Layout title="Fortunato 21 | Detalle del Juego | Ludik Hub" description="Conoce todo sobre Fortunato 21, el juego de cartas espacial desarrollado por Ludik Studios." lang="es" adsenseClientId={adsenseEnabled ? adsenseClientId : undefined} gaMeasurementId={gaMeasurementId}>
+<Layout title="Fortunato 21 | Detalles y Comentarios | Ludik Hub" description="Conoce todo sobre Fortunato 21, lee reseñas de la comunidad, califica con estrellas y comparte tu opinión." lang="es" adsenseClientId={adsenseEnabled ? adsenseClientId : undefined} gaMeasurementId={gaMeasurementId}>
 	<main class="game-detail-shell">
 		<!-- BOTÓN REGRESAR -->
 		<div class="nav-back">
@@ -17,7 +18,12 @@ const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
 
 		<!-- ENCABEZADO DEL JUEGO -->
 		<header class="detail-header">
-			<div class="header-badge">DETALLES DEL PROYECTO</div>
+			<div class="header-top-row">
+				<div class="header-badge">DETALLES Y COMENTARIOS</div>
+				<a href="#comentarios" class="header-reviews-link">
+					★ Valoraciones y Comentarios
+				</a>
+			</div>
 			<h1>FORTUNATO <em>21</em></h1>
 			<p class="tagline">Cartas, táctica y suerte en las profundidades del espacio.</p>
 		</header>
@@ -172,6 +178,12 @@ const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
 				</div>
 			</aside>
 		</section>
+
+		<!-- SECCIÓN DE CALIFICACIONES Y COMENTARIOS -->
+		<GameReviews
+			gameId="21-fortunato"
+			gameTitle="21 Fortunato"
+		/>
 	</main>
 </Layout>
 
@@ -215,6 +227,29 @@ const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 		padding-bottom: 24px;
 	}
+	.header-top-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 8px;
+	}
+	.header-reviews-link {
+		font-size: 11px;
+		font-weight: 700;
+		color: #ffcb76;
+		text-decoration: none;
+		background: rgba(255, 203, 118, 0.1);
+		border: 1px solid rgba(255, 203, 118, 0.3);
+		padding: 4px 12px;
+		border-radius: 20px;
+		transition: all 0.2s ease;
+	}
+	.header-reviews-link:hover {
+		background: rgba(255, 203, 118, 0.2);
+		transform: translateY(-1px);
+		border-color: #ffcb76;
+	}
+
 	.header-badge {
 		font-size: 10px;
 		font-weight: 900;

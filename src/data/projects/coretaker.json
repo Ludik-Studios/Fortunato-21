@@ -1,0 +1,22 @@
+{
+	"title": "Coretaker",
+	"tagline": "Defensa táctica de núcleo y supervivencia",
+	"category": "Videojuego",
+	"categorySlug": "videojuegos",
+	"status": "DISPONIBLE",
+	"year": "2025",
+	"featured": true,
+	"description": "Experiencia de acción y reflejos en tiempo real. Los jugadores defienden el núcleo energético de una estación espacial ante incesantes oleadas hostiles optimizando sistemas defensivos.",
+	"playUrl": "/#home",
+	"detailUrl": "/games/coretaker",
+	"media": {
+		"coverImage": "",
+		"videoUrl": "",
+		"gallery": []
+	},
+	"team": [
+		{ "role": "Programación Principal", "name": "Ian Torres", "contact": "ian.torres@ludikstudios.com" },
+		{ "role": "Diseño de Niveles", "name": "Jorge Trujillo", "contact": "jorge.trujillo@ludikstudios.com" },
+		{ "role": "Música Original", "name": "Elena Castillo", "contact": "elena.castillo@ludikstudios.com" }
+	]
+}

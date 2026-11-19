@@ -1,12 +1,13 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import GameReviews from '../../components/GameReviews.astro';
 
 const adsenseClientId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID;
 const adsenseEnabled = import.meta.env.PROD && adsenseClientId;
 const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
 ---
 
-<Layout title="Coretaker | Detalle del Juego | Ludik Hub" description="Conoce todo sobre Coretaker, el juego de acción y supervivencia táctica desarrollado por Ludik Studios." lang="es" adsenseClientId={adsenseEnabled ? adsenseClientId : undefined} gaMeasurementId={gaMeasurementId}>
+<Layout title="Coretaker | Detalles y Comentarios | Ludik Hub" description="Conoce todo sobre Coretaker, lee reseñas de la comunidad, califica con estrellas y comparte tu opinión." lang="es" adsenseClientId={adsenseEnabled ? adsenseClientId : undefined} gaMeasurementId={gaMeasurementId}>
 	<main class="game-detail-shell">
 		<!-- BOTÓN REGRESAR -->
 		<div class="nav-back">
@@ -17,7 +18,12 @@ const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
 
 		<!-- ENCABEZADO DEL JUEGO -->
 		<header class="detail-header">
-			<div class="header-badge">DETALLES DEL PROYECTO</div>
+			<div class="header-top-row">
+				<div class="header-badge">DETALLES Y COMENTARIOS</div>
+				<a href="#comentarios" class="header-reviews-link">
+					★ Valoraciones y Comentarios
+				</a>
+			</div>
 			<h1>CORE<em>TAKER</em></h1>
 			<p class="tagline">Defensa táctica, reflejos y supervivencia en el espacio profundo.</p>
 		</header>
@@ -170,6 +176,35 @@ const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
 				</div>
 			</aside>
 		</section>
+
+		<!-- SECCIÓN DE CALIFICACIONES Y COMENTARIOS -->
+		<GameReviews
+			gameId="coretaker"
+			gameTitle="Coretaker"
+			initialReviews={[
+				{
+					id: 'c1',
+					author: 'Daniela M.',
+					rating: 5.0,
+					date: '17 nov 2026',
+					text: '¡Super frenético y adictivo! Defender el núcleo bajo presión constante te mantiene al borde del asiento todo el tiempo.'
+				},
+				{
+					id: 'c2',
+					author: 'Andrés P.',
+					rating: 4.5,
+					date: '15 nov 2026',
+					text: 'Excelente respuesta de controles y rendimiento fluido en WebGL. El sistema de oleadas está muy bien logrado.'
+				},
+				{
+					id: 'c3',
+					author: 'Lucía T.',
+					rating: 4.0,
+					date: '10 nov 2026',
+					text: 'Me encantó la atmósfera de la estación espacial. Gran trabajo del equipo de Ludik Studios.'
+				}
+			]}
+		/>
 	</main>
 </Layout>
 
@@ -213,6 +248,29 @@ const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 		padding-bottom: 24px;
 	}
+	.header-top-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 8px;
+	}
+	.header-reviews-link {
+		font-size: 11px;
+		font-weight: 700;
+		color: #ffcb76;
+		text-decoration: none;
+		background: rgba(255, 203, 118, 0.1);
+		border: 1px solid rgba(255, 203, 118, 0.3);
+		padding: 4px 12px;
+		border-radius: 20px;
+		transition: all 0.2s ease;
+	}
+	.header-reviews-link:hover {
+		background: rgba(255, 203, 118, 0.2);
+		transform: translateY(-1px);
+		border-color: #ffcb76;
+	}
+
 	.header-badge {
 		font-size: 10px;
 		font-weight: 900;

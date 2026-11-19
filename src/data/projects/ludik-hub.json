@@ -1,0 +1,22 @@
+{
+	"title": "Ludik Hub Platform",
+	"tagline": "Portal web de videojuegos y comunidad indie",
+	"category": "Desarrollo Web",
+	"categorySlug": "web",
+	"status": "ACTIVO",
+	"year": "2025",
+	"featured": false,
+	"description": "Ecosistema web completo desarrollado con Astro v7 (SSR), arquitectura serverless en Netlify, base de datos y autenticación segura con Supabase, y pasarela de donaciones con Mercado Pago Checkout Pro.",
+	"playUrl": "/",
+	"detailUrl": null,
+	"media": {
+		"coverImage": "",
+		"videoUrl": "",
+		"gallery": []
+	},
+	"team": [
+		{ "role": "Arquitectura Web & Frontend", "name": "Jesús Rodríguez", "contact": "jesus.rodriguez@ludikstudios.com" },
+		{ "role": "UI/UX Design", "name": "Ricardo Isais", "contact": "ricardo.isais@ludikstudios.com" },
+		{ "role": "Product Management", "name": "Gael Lozano", "contact": "gael.lozano@ludikstudios.com" }
+	]
+}

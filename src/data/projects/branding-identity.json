@@ -1,0 +1,22 @@
+{
+	"title": "Identidad Visual Ludik Studios",
+	"tagline": "Sistema de diseño y manual de identidad",
+	"category": "Diseño & Branding",
+	"categorySlug": "branding",
+	"status": "COMPLETADO",
+	"year": "2025",
+	"featured": false,
+	"description": "Creación de la línea gráfica corporativa del estudio. Inspirada en barajas espaciales retro-futuristas, tipografía pesada y paletas de alto contraste para videojuegos, plataformas web y material promocional.",
+	"playUrl": null,
+	"detailUrl": null,
+	"media": {
+		"coverImage": "",
+		"videoUrl": "",
+		"gallery": []
+	},
+	"team": [
+		{ "role": "Diseño Gráfico & Branding", "name": "Ricardo Isais", "contact": "ricardo.isais@ludikstudios.com" },
+		{ "role": "Dirección de Arte", "name": "Jorge Trujillo", "contact": "jorge.trujillo@ludikstudios.com" },
+		{ "role": "Coordinación de Proyecto", "name": "Omar Muñoz", "contact": "omar.munoz@ludikstudios.com" }
+	]
+}

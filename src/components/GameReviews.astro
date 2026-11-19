@@ -1,0 +1,797 @@
+---
+interface Review {
+	id: string;
+	author: string;
+	rating: number;
+	date: string;
+	text: string;
+}
+
+interface Props {
+	gameId: string;
+	gameTitle: string;
+	initialReviews?: Review[];
+}
+
+const {
+	gameId,
+	gameTitle,
+	initialReviews = [
+		{
+			id: '1',
+			author: 'Mateo V.',
+			rating: 5.0,
+			date: '14 nov 2026',
+			text: '¡Una experiencia increíble! Las mecánicas se sienten muy pulidas y el apartado sonoro complementa genial la ambientación espacial.'
+		},
+		{
+			id: '2',
+			author: 'Sofía R.',
+			rating: 4.5,
+			date: '12 nov 2026',
+			text: 'Excelente juego para partidas rápidas. La curva de dificultad está muy bien balanceada y se nota el cariño en los detalles.'
+		},
+		{
+			id: '3',
+			author: 'Carlos G.',
+			rating: 4.0,
+			date: '08 nov 2026',
+			text: 'Muy divertido y adictivo. Corre súper fluido en el navegador sin descargas. Ojalá agreguen más contenido pronto.'
+		}
+	]
+} = Astro.props;
+
+// Cálculo inicial de promedio en el servidor
+const initialSum = initialReviews.reduce((acc, r) => acc + r.rating, 0);
+const initialAvg = initialReviews.length ? (initialSum / initialReviews.length).toFixed(1) : '5.0';
+---
+
+<section class="game-reviews-wrapper" id="comentarios" data-game-id={gameId} data-initial-reviews={JSON.stringify(initialReviews)}>
+	<div class="reviews-header">
+		<div class="header-titles">
+			<span class="reviews-kicker">COMUNIDAD & RESEÑAS</span>
+			<h2>Comentarios y <span>Calificaciones</span></h2>
+			<p>Comparte tu experiencia de juego en <b>{gameTitle}</b>, puntúa con estrellas y apoya al equipo de desarrollo.</p>
+		</div>
+	</div>
+
+	<!-- RESUMEN DE CALIFICACIÓN PROMEDIO -->
+	<div class="rating-overview-card">
+		<div class="score-display">
+			<span class="score-number" id="avg-score-number">{initialAvg}</span>
+			<div class="score-meta">
+				<div class="stars-visual" id="avg-stars-container" aria-label={`Calificación promedio ${initialAvg} de 5 estrellas`}>
+					<!-- Se renderizan dinámicamente las estrellas (llenas, medias o vacías) -->
+				</div>
+				<span class="reviews-count" id="total-reviews-count">Basado en {initialReviews.length} valoraciones</span>
+			</div>
+		</div>
+		<div class="score-badge">
+			<span class="pulse-icon">★</span>
+			<span>Puntaje Oficial de la Comunidad</span>
+		</div>
+	</div>
+
+	<!-- FORMULARIO PARA CALIFICAR Y COMENTAR -->
+	<div class="comment-form-card">
+		<h3>Escribe tu comentario</h3>
+		<p class="form-desc">Califica de 0.5 a 5 estrellas haciendo clic en la mitad o la estrella completa.</p>
+
+		<form id="review-form" class="review-form" autocomplete="off">
+			<div class="form-row">
+				<div class="input-group">
+					<label for="review-author">Tu nombre o alias</label>
+					<input type="text" id="review-author" name="author" placeholder="Ej. JugadorEstelar" required maxlength="40" />
+				</div>
+
+				<div class="input-group rating-input-group">
+					<label>Tu calificación (admite medias estrellas)</label>
+					<div class="star-rating-selector" id="star-selector" role="radiogroup" aria-label="Calificación de 1 a 5 estrellas">
+						<!-- 5 estrellas interactivas divididas en mitades (0.5 y 1.0) -->
+						{[1, 2, 3, 4, 5].map((starIdx) => (
+							<div class="star-slot" data-star={starIdx}>
+								<button type="button" class="star-half left" data-value={(starIdx - 0.5).toFixed(1)} aria-label={`${starIdx - 0.5} estrellas`}></button>
+								<button type="button" class="star-half right" data-value={(starIdx).toFixed(1)} aria-label={`${starIdx} estrellas`}></button>
+								<svg viewBox="0 0 24 24" class="star-base-svg" aria-hidden="true">
+									<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+								</svg>
+								<div class="star-fill-clip" style="width: 100%;">
+									<svg viewBox="0 0 24 24" class="star-filled-svg" aria-hidden="true">
+										<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+									</svg>
+								</div>
+							</div>
+						))}
+					</div>
+					<input type="hidden" name="rating" id="selected-rating" value="5.0" />
+					<span class="rating-feedback" id="rating-feedback">5.0 / 5.0 estrellas (¡Excelente!)</span>
+				</div>
+			</div>
+
+			<div class="input-group">
+				<label for="review-text">Tu opinión o reseña</label>
+				<textarea id="review-text" name="comment" rows="3" placeholder="¿Qué te pareció el juego? ¿Tienes alguna estrategia o recomendación?" required maxlength="500"></textarea>
+			</div>
+
+			<div class="form-actions">
+				<button type="submit" class="btn-submit-review">
+					<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+						<path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+					</svg>
+					Publicar Comentario
+				</button>
+				<span class="form-notice" id="submit-notice" role="status" aria-live="polite"></span>
+			</div>
+		</form>
+	</div>
+
+	<!-- LISTA DE COMENTARIOS PUBLICADOS -->
+	<div class="reviews-feed">
+		<div class="feed-header">
+			<h3>Comentarios de Jugadores</h3>
+			<span class="feed-badge" id="feed-count-badge">{initialReviews.length} comentarios</span>
+		</div>
+
+		<div class="reviews-list" id="reviews-list-container">
+			<!-- Los comentarios se insertan aquí dinámica y reactivamente -->
+		</div>
+	</div>
+</section>
+
+<!-- DEFINICIÓN SVG DE ESTRELLA MEDIA REUTILIZABLE -->
+<svg style="display: none;" aria-hidden="true">
+	<defs>
+		<linearGradient id="ludik-half-star-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+			<stop offset="50%" stop-color="#ffcb76" />
+			<stop offset="50%" stop-color="rgba(255, 255, 255, 0.15)" />
+		</linearGradient>
+	</defs>
+</svg>
+
+<script>
+	interface ReviewItem {
+		id: string;
+		author: string;
+		rating: number;
+		date: string;
+		text: string;
+	}
+
+	const wrapper = document.querySelector<HTMLElement>('.game-reviews-wrapper');
+	if (wrapper) {
+		const gameId = wrapper.getAttribute('data-game-id') || 'default-game';
+		const storageKey = `ludik_reviews_${gameId}`;
+		let initialData: ReviewItem[] = [];
+
+		try {
+			const rawData = wrapper.getAttribute('data-initial-reviews');
+			if (rawData) initialData = JSON.parse(rawData);
+		} catch (e) {
+			initialData = [];
+		}
+
+		// Obtener reseñas combinando localStorage y valores iniciales
+		function getSavedReviews(): ReviewItem[] {
+			try {
+				const saved = localStorage.getItem(storageKey);
+				if (saved) {
+					return JSON.parse(saved);
+				}
+			} catch (e) {
+				console.error(e);
+			}
+			return initialData;
+		}
+
+		function saveReviews(reviews: ReviewItem[]) {
+			try {
+				localStorage.setItem(storageKey, JSON.stringify(reviews));
+			} catch (e) {
+				console.error(e);
+			}
+		}
+
+		let currentReviews: ReviewItem[] = getSavedReviews();
+
+		// Elementos del DOM
+		const avgNumberEl = document.getElementById('avg-score-number');
+		const avgStarsEl = document.getElementById('avg-stars-container');
+		const totalCountEl = document.getElementById('total-reviews-count');
+		const feedCountBadge = document.getElementById('feed-count-badge');
+		const listContainer = document.getElementById('reviews-list-container');
+		const reviewForm = document.getElementById('review-form') as HTMLFormElement | null;
+		const ratingInput = document.getElementById('selected-rating') as HTMLInputElement | null;
+		const ratingFeedback = document.getElementById('rating-feedback');
+		const starSlots = document.querySelectorAll<HTMLElement>('.star-slot');
+		const submitNotice = document.getElementById('submit-notice');
+
+		// Generador de SVG para estrellas (soporta llenas, medias y vacías)
+		function renderStarSvg(type: 'full' | 'half' | 'empty'): string {
+			if (type === 'full') {
+				return `<svg class="star-icon full" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#ffcb76"/></svg>`;
+			} else if (type === 'half') {
+				return `<svg class="star-icon half" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="url(#ludik-half-star-gradient)"/></svg>`;
+			} else {
+				return `<svg class="star-icon empty" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="rgba(255,255,255,0.18)"/></svg>`;
+			}
+		}
+
+		// Renderizar fila de 5 estrellas dado un número flotante
+		function renderStarsRowHtml(score: number): string {
+			let html = '';
+			for (let i = 1; i <= 5; i++) {
+				if (score >= i) {
+					html += renderStarSvg('full');
+				} else if (score >= i - 0.5) {
+					html += renderStarSvg('half');
+				} else {
+					html += renderStarSvg('empty');
+				}
+			}
+			return html;
+		}
+
+		// Actualizar el resumen general y el promedio
+		function updateSummary() {
+			const count = currentReviews.length;
+			let avg = 5.0;
+			if (count > 0) {
+				const sum = currentReviews.reduce((acc, r) => acc + Number(r.rating), 0);
+				avg = Number((sum / count).toFixed(1));
+			}
+
+			if (avgNumberEl) avgNumberEl.textContent = avg.toFixed(1);
+			if (avgStarsEl) avgStarsEl.innerHTML = renderStarsRowHtml(avg);
+			if (totalCountEl) totalCountEl.textContent = `Basado en ${count} ${count === 1 ? 'valoración' : 'valoraciones'}`;
+			if (feedCountBadge) feedCountBadge.textContent = `${count} ${count === 1 ? 'comentario' : 'comentarios'}`;
+		}
+
+		// Renderizar la lista de comentarios
+		function renderReviewsList() {
+			if (!listContainer) return;
+			if (currentReviews.length === 0) {
+				listContainer.innerHTML = `
+					<div class="empty-reviews-state">
+						<p>Aún no hay comentarios para este juego. ¡Sé el primero en compartir tu opinión!</p>
+					</div>
+				`;
+				return;
+			}
+
+			listContainer.innerHTML = currentReviews.map((rev) => {
+				const initial = (rev.author || 'J').charAt(0).toUpperCase();
+				return `
+					<article class="review-item">
+						<div class="review-user-info">
+							<div class="user-avatar">${initial}</div>
+							<div class="user-details">
+								<strong class="user-name">${escapeHtml(rev.author)}</strong>
+								<span class="user-badge">Jugador Verificado</span>
+							</div>
+							<time class="review-date">${escapeHtml(rev.date)}</time>
+						</div>
+						<div class="review-stars-row">
+							${renderStarsRowHtml(rev.rating)}
+							<span class="review-rating-value">${Number(rev.rating).toFixed(1)} / 5.0</span>
+						</div>
+						<p class="review-text-content">${escapeHtml(rev.text)}</p>
+					</article>
+				`;
+			}).join('');
+		}
+
+		function escapeHtml(str: string): string {
+			return str
+				.replace(/&/g, '&amp;')
+				.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
+				.replace(/"/g, '&quot;')
+				.replace(/'/g, '&#039;');
+		}
+
+		// Lógica del selector interactivo de estrellas
+		let selectedRatingValue = 5.0;
+
+		function updateStarSelectorVisual(val: number) {
+			starSlots.forEach((slot) => {
+				const starIdx = Number(slot.getAttribute('data-star') || '1');
+				const fillClip = slot.querySelector<HTMLElement>('.star-fill-clip');
+				if (!fillClip) return;
+
+				if (val >= starIdx) {
+					fillClip.style.width = '100%';
+				} else if (val === starIdx - 0.5) {
+					fillClip.style.width = '50%';
+				} else {
+					fillClip.style.width = '0%';
+				}
+			});
+
+			if (ratingInput) ratingInput.value = val.toFixed(1);
+
+			if (ratingFeedback) {
+				let desc = 'Excelente';
+				if (val <= 1.0) desc = 'Muy malo';
+				else if (val <= 2.0) desc = 'Regular';
+				else if (val <= 3.0) desc = 'Bueno';
+				else if (val <= 4.0) desc = 'Muy bueno';
+				else if (val < 5.0) desc = 'Casi perfecto';
+				ratingFeedback.textContent = `${val.toFixed(1)} / 5.0 estrellas (${desc})`;
+			}
+		}
+
+		// Eventos de los botones de media estrella y estrella completa
+		const halfButtons = document.querySelectorAll<HTMLButtonElement>('.star-half');
+		halfButtons.forEach((btn) => {
+			const val = parseFloat(btn.getAttribute('data-value') || '5');
+
+			// Hover
+			btn.addEventListener('mouseenter', () => {
+				updateStarSelectorVisual(val);
+			});
+
+			// Clic para fijar calificación
+			btn.addEventListener('click', (e) => {
+				e.preventDefault();
+				selectedRatingValue = val;
+				updateStarSelectorVisual(val);
+			});
+		});
+
+		// Si el usuario sale del selector sin hacer clic, restaurar el valor seleccionado
+		const starSelectorEl = document.getElementById('star-selector');
+		starSelectorEl?.addEventListener('mouseleave', () => {
+			updateStarSelectorVisual(selectedRatingValue);
+		});
+
+		// Manejo del envío del formulario
+		reviewForm?.addEventListener('submit', (e) => {
+			e.preventDefault();
+			const authorInput = document.getElementById('review-author') as HTMLInputElement | null;
+			const textInput = document.getElementById('review-text') as HTMLTextAreaElement | null;
+
+			const author = authorInput?.value.trim() || 'Jugador Anónimo';
+			const text = textInput?.value.trim() || '';
+			const rating = selectedRatingValue;
+
+			if (!text) return;
+
+			// Crear fecha actual en español
+			const now = new Date();
+			const day = now.getDate();
+			const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+			const month = months[now.getMonth()];
+			const year = now.getFullYear();
+			const formattedDate = `${day} ${month} ${year}`;
+
+			const newReview: ReviewItem = {
+				id: 'rev_' + Date.now(),
+				author,
+				rating,
+				date: formattedDate,
+				text
+			};
+
+			// Insertar al inicio de la lista
+			currentReviews.unshift(newReview);
+			saveReviews(currentReviews);
+
+			// Actualizar vista
+			updateSummary();
+			renderReviewsList();
+
+			// Limpiar formulario y reiniciar estrella a 5
+			if (textInput) textInput.value = '';
+			selectedRatingValue = 5.0;
+			updateStarSelectorVisual(5.0);
+
+			if (submitNotice) {
+				submitNotice.textContent = '¡Comentario y calificación guardados exitosamente!';
+				submitNotice.className = 'form-notice notice-success';
+				setTimeout(() => {
+					submitNotice.textContent = '';
+					submitNotice.className = 'form-notice';
+				}, 4000);
+			}
+		});
+
+		// Inicializar estado en pantalla
+		updateStarSelectorVisual(selectedRatingValue);
+		updateSummary();
+		renderReviewsList();
+	}
+</script>
+
+<style>
+	.game-reviews-wrapper {
+		margin-top: 48px;
+		display: flex;
+		flex-direction: column;
+		gap: 32px;
+		border-top: 1px solid rgba(255, 255, 255, 0.12);
+		padding-top: 40px;
+	}
+
+	.reviews-kicker {
+		font-size: 10px;
+		font-weight: 900;
+		color: #ffcb76;
+		letter-spacing: 2px;
+		display: block;
+		margin-bottom: 6px;
+	}
+
+	.reviews-header h2 {
+		margin: 0;
+		font-family: Impact, 'Arial Black', sans-serif;
+		font-size: clamp(26px, 4vw, 36px);
+		letter-spacing: 1px;
+		color: #fff;
+	}
+	.reviews-header h2 span {
+		color: #ffcb76;
+	}
+	.reviews-header p {
+		margin: 8px 0 0;
+		font-size: 15px;
+		color: rgba(255, 255, 255, 0.75);
+		max-width: 760px;
+		line-height: 1.5;
+	}
+
+	/* CARD DE PROMEDIO Y ESTRELLAS TOTALES */
+	.rating-overview-card {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 24px;
+		padding: 24px 32px;
+		border-radius: 12px;
+		background: linear-gradient(135deg, rgba(17, 34, 68, 0.6) 0%, rgba(9, 19, 37, 0.8) 100%);
+		border: 1px solid rgba(255, 203, 118, 0.3);
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+	}
+	.score-display {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+	}
+	.score-number {
+		font-family: Impact, 'Arial Black', sans-serif;
+		font-size: 54px;
+		line-height: 1;
+		color: #ffcb76;
+		text-shadow: 0 0 20px rgba(255, 203, 118, 0.4);
+	}
+	.score-meta {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+	.stars-visual,
+	:global(.stars-visual),
+	:global(.review-stars-row) {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+	}
+	:global(.star-icon) {
+		width: 16px !important;
+		height: 16px !important;
+		min-width: 16px;
+		min-height: 16px;
+		max-width: 16px;
+		max-height: 16px;
+		display: inline-block;
+		flex-shrink: 0;
+		vertical-align: middle;
+	}
+	:global(.stars-visual .star-icon) {
+		width: 22px !important;
+		height: 22px !important;
+		min-width: 22px;
+		min-height: 22px;
+		max-width: 22px;
+		max-height: 22px;
+	}
+	.reviews-count {
+		font-size: 13px;
+		color: rgba(255, 255, 255, 0.65);
+		font-weight: 600;
+	}
+	.score-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		background: rgba(255, 255, 255, 0.08);
+		border: 1px solid rgba(255, 255, 255, 0.15);
+		padding: 8px 16px;
+		border-radius: 30px;
+		font-size: 12px;
+		font-weight: 700;
+		color: #ffcb76;
+	}
+	.score-badge .pulse-icon {
+		color: #ffcb76;
+		font-size: 14px;
+	}
+
+	/* FORMULARIO DE COMENTARIO Y CALIFICACIÓN */
+	.comment-form-card {
+		padding: 28px 32px;
+		border-radius: 12px;
+		background: rgba(14, 27, 52, 0.6);
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		backdrop-filter: blur(8px);
+	}
+	.comment-form-card h3 {
+		margin: 0 0 4px;
+		font-family: Impact, 'Arial Black', sans-serif;
+		font-size: 20px;
+		color: #fff;
+		letter-spacing: 0.5px;
+	}
+	.form-desc {
+		margin: 0 0 20px;
+		font-size: 13px;
+		color: rgba(255, 255, 255, 0.6);
+	}
+	.review-form {
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
+	}
+	.form-row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 24px;
+	}
+	.input-group {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+	.input-group label {
+		font-size: 12px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		color: rgba(255, 255, 255, 0.7);
+	}
+	.input-group input[type="text"],
+	.input-group textarea {
+		padding: 12px 16px;
+		border-radius: 6px;
+		background: rgba(5, 11, 20, 0.7);
+		border: 1px solid rgba(255, 255, 255, 0.15);
+		color: #fff;
+		font-family: inherit;
+		font-size: 14px;
+		outline: none;
+		transition: border-color 0.2s ease, box-shadow 0.2s ease;
+	}
+	.input-group input[type="text"]:focus,
+	.input-group textarea:focus {
+		border-color: #ffcb76;
+		box-shadow: 0 0 12px rgba(255, 203, 118, 0.25);
+	}
+
+	/* SELECTOR INTERACTIVO DE ESTRELLAS CON MEDIAS ESTRELLAS */
+	.star-rating-selector {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		user-select: none;
+		padding: 4px 0;
+	}
+	.star-slot {
+		position: relative;
+		width: 32px;
+		height: 32px;
+		cursor: pointer;
+	}
+	.star-half {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 50%;
+		z-index: 5;
+		background: transparent;
+		border: none;
+		padding: 0;
+		cursor: pointer;
+	}
+	.star-half.left {
+		left: 0;
+	}
+	.star-half.right {
+		right: 0;
+	}
+	.star-base-svg,
+	.star-filled-svg {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		pointer-events: none;
+	}
+	.star-base-svg {
+		fill: rgba(255, 255, 255, 0.18);
+		z-index: 1;
+	}
+	.star-fill-clip {
+		position: absolute;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		overflow: hidden;
+		pointer-events: none;
+		z-index: 2;
+		transition: width 0.15s ease;
+	}
+	.star-fill-clip .star-filled-svg {
+		width: 32px;
+		height: 32px;
+		fill: #ffcb76;
+		filter: drop-shadow(0 0 6px rgba(255, 203, 118, 0.5));
+	}
+	.rating-feedback {
+		font-size: 13px;
+		font-weight: 700;
+		color: #ffcb76;
+	}
+
+	.form-actions {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		margin-top: 4px;
+	}
+	.btn-submit-review {
+		padding: 12px 24px;
+		border-radius: 6px;
+		background: linear-gradient(135deg, #ffcb76 0%, #e5a438 100%);
+		color: #071325;
+		font-family: 'Arial Black', Impact, sans-serif;
+		font-size: 13px;
+		letter-spacing: 0.5px;
+		border: none;
+		cursor: pointer;
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		box-shadow: 0 4px 14px rgba(255, 203, 118, 0.25);
+		transition: transform 0.2s ease, box-shadow 0.2s ease;
+	}
+	.btn-submit-review:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 6px 20px rgba(255, 203, 118, 0.4);
+	}
+	.form-notice {
+		font-size: 13px;
+		font-weight: 600;
+	}
+	.form-notice.notice-success {
+		color: #4ade80;
+	}
+
+	/* FEED DE COMENTARIOS */
+	.reviews-feed {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+	.feed-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding-bottom: 12px;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	}
+	.feed-header h3 {
+		margin: 0;
+		font-family: Impact, 'Arial Black', sans-serif;
+		font-size: 18px;
+		color: #fff;
+		letter-spacing: 0.5px;
+	}
+	.feed-badge {
+		font-size: 11px;
+		font-weight: 800;
+		padding: 3px 8px;
+		border-radius: 4px;
+		background: rgba(255, 255, 255, 0.1);
+		color: rgba(255, 255, 255, 0.8);
+	}
+
+	.reviews-list {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+	}
+	:global(.review-item) {
+		padding: 20px;
+		border-radius: 10px;
+		background: rgba(14, 27, 52, 0.5);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		transition: border-color 0.2s ease;
+	}
+	:global(.review-item:hover) {
+		border-color: rgba(255, 203, 118, 0.3);
+	}
+	:global(.review-user-info) {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+	:global(.user-avatar) {
+		width: 38px;
+		height: 38px;
+		border-radius: 50%;
+		background: linear-gradient(135deg, #24468f 0%, #15274d 100%);
+		border: 1px solid rgba(255, 203, 118, 0.5);
+		color: #ffcb76;
+		font-family: 'Arial Black', Impact, sans-serif;
+		display: grid;
+		place-items: center;
+		font-size: 15px;
+		flex-shrink: 0;
+	}
+	:global(.user-details) {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+	:global(.user-name) {
+		font-size: 14px;
+		font-weight: 700;
+		color: #fff;
+	}
+	:global(.user-badge) {
+		font-size: 9px;
+		font-weight: 800;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		color: #38bdf8;
+	}
+	:global(.review-date) {
+		margin-left: auto;
+		font-size: 12px;
+		color: rgba(255, 255, 255, 0.45);
+	}
+	:global(.review-rating-value) {
+		font-size: 12px;
+		font-weight: 700;
+		color: #ffcb76;
+		margin-left: 6px;
+	}
+	:global(.review-text-content) {
+		margin: 0;
+		font-size: 14px;
+		line-height: 1.6;
+		color: rgba(255, 255, 255, 0.85);
+	}
+	:global(.empty-reviews-state) {
+		padding: 32px;
+		text-align: center;
+		color: rgba(255, 255, 255, 0.5);
+		font-size: 14px;
+		background: rgba(14, 27, 52, 0.3);
+		border-radius: 8px;
+		border: 1px dashed rgba(255, 255, 255, 0.15);
+	}
+
+	@media (max-width: 768px) {
+		.rating-overview-card {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+		.form-row {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

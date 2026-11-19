@@ -1,100 +1,18 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
 
 const adsenseClientId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID;
 const adsenseEnabled = import.meta.env.PROD && adsenseClientId;
 const gaMeasurementId = import.meta.env.PUBLIC_GA4_MEASUREMENT_ID;
 const currentUser = Astro.locals.user;
 
-// Catálogo completo de proyectos multidisciplinarios del estudio
-const projects = [
-	{
-		id: '21-fortunato',
-		category: 'Videojuego',
-		categorySlug: 'videojuegos',
-		title: '21 Fortunato',
-		tagline: 'Juego táctico de cartas espacial',
-		status: 'DISPONIBLE',
-		year: '2025',
-		description: 'Nuestro título insignia de cartas y estrategia con temática espacial. Combina mecánicas roguelike, sistema de tienda de artefactos intergalácticos y duelos contra jefes cósmicos en Unity WebGL.',
-		playUrl: '/#home',
-		detailUrl: '/games/fortunato-21',
-		team: [
-			{ role: 'Dirección & Game Design', name: 'Alex Mercer', contact: 'alex.mercer@ludikstudios.com' },
-			{ role: 'Programación WebGL', name: 'Valeria Ramos', contact: 'valeria.ramos@ludikstudios.com' },
-			{ role: 'Arte & Modelado 3D', name: 'Diego Torres', contact: 'diego.torres@ludikstudios.com' },
-			{ role: 'Audio & Efectos', name: 'Elena Castillo', contact: 'elena.castillo@ludikstudios.com' }
-		]
-	},
-	{
-		id: 'coretaker',
-		category: 'Videojuego',
-		categorySlug: 'videojuegos',
-		title: 'Coretaker',
-		tagline: 'Defensa táctica de núcleo y supervivencia',
-		status: 'DISPONIBLE',
-		year: '2025',
-		description: 'Experiencia de acción y reflejos en tiempo real. Los jugadores defienden el núcleo energético de una estación espacial ante incesantes oleadas hostiles optimizando sistemas defensivos.',
-		playUrl: '/#home',
-		detailUrl: '/games/coretaker',
-		team: [
-			{ role: 'Programación Principal', name: 'Ian Torres', contact: 'ian.torres@ludikstudios.com' },
-			{ role: 'Diseño de Niveles', name: 'Jorge Trujillo', contact: 'jorge.trujillo@ludikstudios.com' },
-			{ role: 'Música Original', name: 'Elena Castillo', contact: 'elena.castillo@ludikstudios.com' }
-		]
-	},
-	{
-		id: 'ludik-hub',
-		category: 'Desarrollo Web',
-		categorySlug: 'web',
-		title: 'Ludik Hub Platform',
-		tagline: 'Portal web de videojuegos y comunidad indie',
-		status: 'ACTIVO',
-		year: '2025',
-		description: 'Ecosistema web completo desarrollado con Astro v7 (SSR), arquitectura serverless en Netlify, base de datos y autenticación segura con Supabase, y pasarela de donaciones con Mercado Pago Checkout Pro.',
-		playUrl: '/',
-		detailUrl: null,
-		team: [
-			{ role: 'Arquitectura Web & Frontend', name: 'Jesús Rodríguez', contact: 'jesus.rodriguez@ludikstudios.com' },
-			{ role: 'UI/UX Design', name: 'Ricardo Isais', contact: 'ricardo.isais@ludikstudios.com' },
-			{ role: 'Product Management', name: 'Gael Lozano', contact: 'gael.lozano@ludikstudios.com' }
-		]
-	},
-	{
-		id: 'red-king-campaign',
-		category: 'Marketing & Campañas',
-		categorySlug: 'marketing',
-		title: 'Campaña "Red King" 2025',
-		tagline: 'Lanzamiento y posicionamiento de marca',
-		status: 'FINALIZADO',
-		year: '2025',
-		description: 'Campaña integral de lanzamiento y crecimiento orgánico de comunidad para el debut del estudio. Estrategia multicanal en redes sociales, trailers cinemáticos, kits de prensa y reclutamiento de beta testers.',
-		playUrl: null,
-		detailUrl: null,
-		team: [
-			{ role: 'Lead de Marketing & Estrategia', name: 'Enrique King', contact: 'enrique.king@ludikstudios.com' },
-			{ role: 'Dirección Creativa', name: 'Jorge Trujillo', contact: 'jorge.trujillo@ludikstudios.com' },
-			{ role: 'Social Media & PR', name: 'Daphne Dávila', contact: 'daphne.davila@ludikstudios.com' }
-		]
-	},
-	{
-		id: 'branding-identity',
-		category: 'Diseño & Branding',
-		categorySlug: 'branding',
-		title: 'Identidad Visual Ludik Studios',
-		tagline: 'Sistema de diseño y manual de identidad',
-		status: 'COMPLETADO',
-		year: '2025',
-		description: 'Creación de la línea gráfica corporativa del estudio. Inspirada en barajas espaciales retro-futuristas, tipografía pesada y paletas de alto contraste para videojuegos, plataformas web y material promocional.',
-		playUrl: null,
-		detailUrl: null,
-		team: [
-			{ role: 'Diseño Gráfico & Branding', name: 'Ricardo Isais', contact: 'ricardo.isais@ludikstudios.com' },
-			{ role: 'Dirección de Arte', name: 'Jorge Trujillo', contact: 'jorge.trujillo@ludikstudios.com' },
-			{ role: 'Coordinación de Proyecto', name: 'Omar Muñoz', contact: 'omar.munoz@ludikstudios.com' }
-		]
-	}
-];
+// Cargar proyectos dinámicamente desde Astro Content Collections (src/data/projects/*.json)
+const rawProjects = await getCollection('projects');
+const projects = rawProjects.map((entry) => ({
+	id: entry.id,
+	...entry.data
+}));
 
 const categories = [
 	{ label: 'Todos los proyectos', slug: 'all' },
@@ -187,65 +105,75 @@ const categories = [
 							</div>
 
 							<div class="media-container">
-								<!-- SLOT DE VIDEO PROVISIONAL -->
+								<!-- SLOT DE VIDEO -->
 								<div class="media-slot media-slot--video">
-									<!-- Reemplazar con <iframe src="https://www.youtube.com/embed/..." allowfullscreen></iframe> o <video src="..."></video> -->
-									<div class="media-placeholder">
-										<svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
-											<path d="M8 5v14l11-7z"/>
-										</svg>
-										<strong>Trailer o Demostración</strong>
-										<span>Espacio reservado para video del proyecto</span>
-									</div>
+									{proj.media?.videoUrl ? (
+										proj.media.videoUrl.includes('youtube.com') || proj.media.videoUrl.includes('youtu.be') ? (
+											<iframe src={proj.media.videoUrl} title={`Video ${proj.title}`} allowfullscreen class="media-real-video"></iframe>
+										) : (
+											<video src={proj.media.videoUrl} controls class="media-real-video"></video>
+										)
+									) : (
+										<div class="media-placeholder">
+											<svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+												<path d="M8 5v14l11-7z"/>
+											</svg>
+											<strong>Trailer o Demostración</strong>
+											<span>Espacio reservado para video del proyecto</span>
+										</div>
+									)}
 								</div>
 
-								<!-- SLOTS DE CAPTURAS E IMÁGENES PROVISIONALES -->
+								<!-- SLOTS DE CAPTURAS E IMÁGENES -->
 								<div class="media-images-grid">
-									<div class="media-slot media-slot--image">
-										<!-- Reemplazar con <img src="/ruta/imagen1.jpg" alt="Captura 1" /> -->
-										<div class="media-placeholder">
-											<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
-												<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-												<circle cx="8.5" cy="8.5" r="1.5"/>
-												<polyline points="21 15 16 10 5 21"/>
-											</svg>
-											<strong>Captura 1</strong>
-											<span>Espacio para imagen</span>
-										</div>
-									</div>
-
-									<div class="media-slot media-slot--image">
-										<!-- Reemplazar con <img src="/ruta/imagen2.jpg" alt="Captura 2" /> -->
-										<div class="media-placeholder">
-											<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
-												<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-												<circle cx="8.5" cy="8.5" r="1.5"/>
-												<polyline points="21 15 16 10 5 21"/>
-											</svg>
-											<strong>Captura 2</strong>
-											<span>Espacio para imagen</span>
-										</div>
-									</div>
+									{proj.media?.gallery && proj.media.gallery.length > 0 ? (
+										proj.media.gallery.slice(0, 2).map((imgUrl, i) => (
+											<div class="media-slot media-slot--image">
+												<img src={imgUrl} alt={`Captura ${i + 1} de ${proj.title}`} class="media-real-image" />
+											</div>
+										))
+									) : (
+										<>
+											<div class="media-slot media-slot--image">
+												<div class="media-placeholder">
+													<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
+														<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+														<circle cx="8.5" cy="8.5" r="1.5"/>
+														<polyline points="21 15 16 10 5 21"/>
+													</svg>
+													<strong>Captura 1</strong>
+													<span>Espacio para imagen</span>
+												</div>
+											</div>
+											<div class="media-slot media-slot--image">
+												<div class="media-placeholder">
+													<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
+														<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+														<circle cx="8.5" cy="8.5" r="1.5"/>
+														<polyline points="21 15 16 10 5 21"/>
+													</svg>
+													<strong>Captura 2</strong>
+													<span>Espacio para imagen</span>
+												</div>
+											</div>
+										</>
+									)}
 								</div>
 							</div>
 						</div>
 
 						<!-- BOTONES DE ACCIÓN (SI APLICA) -->
-						{(proj.playUrl || proj.detailUrl) && (
-							<div class="project-actions">
-								{proj.playUrl && (
-									<a href={proj.playUrl} class="btn-action-primary">
-										<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-										{proj.categorySlug === 'videojuegos' ? 'Jugar Ahora' : 'Ver Plataforma'}
-									</a>
-								)}
-								{proj.detailUrl && (
-									<a href={proj.detailUrl} class="btn-action-secondary">
-										Ver Detalles del Juego →
-									</a>
-								)}
-							</div>
-						)}
+						<div class="project-actions">
+							{proj.playUrl && (
+								<a href={proj.playUrl} class="btn-action-primary">
+									<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+									{proj.categorySlug === 'videojuegos' ? 'Jugar Ahora' : 'Ver Plataforma'}
+								</a>
+							)}
+							<a href={proj.detailUrl || `/projects/${proj.id}`} class="btn-action-secondary">
+								Detalles y Comentarios →
+							</a>
+						</div>
 					</div>
 
 					<!-- COLUMNA LATERAL: INVOLUCRADOS, ROL Y CONTACTO -->
