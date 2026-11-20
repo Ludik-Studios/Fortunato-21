@@ -11,10 +11,12 @@
 	"detailUrl": null,
 	"externalUrl": null,
 	"media": {
-		"coverImage": "/image.png",
+		"coverImage": "/todos.jpeg",
 		"videoUrl": "",
 		"gallery": [
-			"/ludo.png"
+			"/ludo.png",
+			"/image.png",
+			"/image.png"
 		]
 	},
 	"team": [

@@ -9,6 +9,7 @@
   "description": "Sistema de karaoke para un canta-bar local, ordena los turnos de los participantes, incluye sistema de calificación (tipo aracade) funcionando tanto con puntuación desde la app hasta el sonido de los aplausos capturados con un microfono.",
   "playUrl": null,
   "detailUrl": null,
+  "externalUrl": null,
   "media": {
     "coverImage": "/rokola/coverrokola.jpeg",
     "videoUrl": "/rokola/rokolavideo.mp4",
@@ -18,9 +19,25 @@
     ]
   },
   "team": [
-    { "role": "Maquetación", "name": "Oswaldo Portillo", "contact": "correo@ludikstudios.com" },
-    { "role": "Visuales del sitio", "name": "Enrique King", "contact": "correo@ludikstudios.com" },
-    { "role": "Full stack", "name": "Adán King", "contact": "correo@ludikstudios.com" },
-    { "role": "Full stack", "name": "Ian Torres", "contact": "correo@ludikstudios.com" }
+    {
+      "role": "Maquetación",
+      "name": "Oswaldo Portillo",
+      "contact": "correo@ludikstudios.com"
+    },
+    {
+      "role": "Visuales del sitio",
+      "name": "Enrique King",
+      "contact": "correo@ludikstudios.com"
+    },
+    {
+      "role": "Full stack",
+      "name": "Adán King",
+      "contact": "correo@ludikstudios.com"
+    },
+    {
+      "role": "Full stack",
+      "name": "Ian Torres",
+      "contact": "correo@ludikstudios.com"
+    }
   ]
 }
