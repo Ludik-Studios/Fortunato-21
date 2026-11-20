@@ -11,9 +11,13 @@
 	"detailUrl": "/games/fortunato-21",
 	"externalUrl": null,
 	"media": {
-		"coverImage": "",
+		"coverImage": "/21/Title.png",
 		"videoUrl": "",
-		"gallery": []
+		"gallery": [
+			"/21/InGame.png",
+			"/21/Bar.png"
+
+		]
 	},
 	"team": [
 		{ "role": "Desarrollador", "name": "Jesus Rodriguez", "contact": "jesusrb14827@gmail.com" }
