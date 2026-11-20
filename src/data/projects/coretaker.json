@@ -15,8 +15,6 @@
 		"gallery": []
 	},
 	"team": [
-		{ "role": "Programación Principal", "name": "Ian Torres", "contact": "ian.torres@ludikstudios.com" },
-		{ "role": "Diseño de Niveles", "name": "Jorge Trujillo", "contact": "jorge.trujillo@ludikstudios.com" },
-		{ "role": "Música Original", "name": "Elena Castillo", "contact": "elena.castillo@ludikstudios.com" }
+		{ "role": "Desarrollador", "name": "Jorge Trujillo", "contact": "jorge.trujillo@ludikstudios.com" }
 	]
 }

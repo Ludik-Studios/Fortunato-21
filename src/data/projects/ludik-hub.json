@@ -9,6 +9,7 @@
 	"description": "Ecosistema web completo desarrollado con Astro v7 (SSR), arquitectura serverless en Netlify, base de datos y autenticación segura con Supabase, y pasarela de donaciones con Mercado Pago Checkout Pro.",
 	"playUrl": "/",
 	"detailUrl": null,
+	"externalUrl": "",
 	"media": {
 		"coverImage": "",
 		"videoUrl": "",

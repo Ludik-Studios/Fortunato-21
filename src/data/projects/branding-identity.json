@@ -6,17 +6,18 @@
 	"status": "COMPLETADO",
 	"year": "2025",
 	"featured": false,
-	"description": "Creación de la línea gráfica corporativa del estudio. Inspirada en barajas espaciales retro-futuristas, tipografía pesada y paletas de alto contraste para videojuegos, plataformas web y material promocional.",
+	"description": "Creación de la identidad del estudio. Inspirada en una parodia de los juegos de azar. Ludik Studio nace la pasión de un equipo pequeño para ofrecer soluciones creativas a personas que lo necesiten. Ofreciendo una amplia variedad de servicios.",
 	"playUrl": null,
 	"detailUrl": null,
+	"externalUrl": null,
 	"media": {
-		"coverImage": "",
+		"coverImage": "/image.png",
 		"videoUrl": "",
-		"gallery": []
+		"gallery": [
+			"/ludo.png"
+		]
 	},
 	"team": [
-		{ "role": "Diseño Gráfico & Branding", "name": "Ricardo Isais", "contact": "ricardo.isais@ludikstudios.com" },
-		{ "role": "Dirección de Arte", "name": "Jorge Trujillo", "contact": "jorge.trujillo@ludikstudios.com" },
-		{ "role": "Coordinación de Proyecto", "name": "Omar Muñoz", "contact": "omar.munoz@ludikstudios.com" }
-	]
+		{ "role": "Diseñador & Community Manager", "name": "Oswaldo Portillo", "contact": "ricardo.isais@ludikstudios.com" },
+		{ "role": "Apoyo Community Manager", "name": "Enrique King", "contact": "jorge.trujillo@ludikstudios.com" }	]
 }

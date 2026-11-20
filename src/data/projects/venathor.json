@@ -1,0 +1,27 @@
+{
+  "title": "Venathor",
+  "tagline": "Creador de contenido",
+  "category": "web",
+  "categorySlug": "web",
+  "status": "EN DESARROLLO",
+  "year": "2025",
+  "featured": false,
+  "description": "Producción multimedia de ciencia ficción",
+  "playUrl": null,
+  "detailUrl": "https://linktr.ee/VENATHOR",
+  "media": {
+    "coverImage": "/venathor/venathor-cover.jpeg",
+    "videoUrl": "/venathor/video.mp4",
+    "gallery": [
+      "/venathor/venathor1.jpeg",
+      "/venathor/venathor2.jpeg"
+    ]
+  },
+  "team": [
+    {
+      "role": "Editor de video",
+      "name": "Enrique King",
+      "contact": "correo@ludikstudios.com"
+    }
+  ]
+}
